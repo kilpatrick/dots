@@ -18,7 +18,13 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     # TODO: Install Pip
 
 
-    # TODO: Install zsh
+    # Prezto
+    git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
+    /usr/bin/env zsh -c 'setopt EXTENDED_GLOB\
+        for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do \
+            ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}" \
+        done'
+    chsh -s $(which zsh)
 
 
     # JavaScript
@@ -46,17 +52,8 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
 
 
     # Terminal Tooling
-    brew install curl htop lynx mycli nmap ripgrep the_silver_searcher tmux vim # fish git mysql 
+    brew install curl htop lynx mycli nmap ripgrep the_silver_searcher tmux vim zsh-autosuggestions # fish git mysql
     pip install riverstone-cli
-    echo "This will clone https://github.com/zsh-users/zsh-autosuggestions"
-    echo "Are you sure you want to clone zsh-autosuggestions? (y/n)"
-    read zsh_autosuggestions_confirm
-    if [[ $zsh_autosuggestions_confirm == "yes" || zsh_autosuggestions_confirm == "y" ]]; then
-        (cd ~ && cd .zsh || mkdir .zsh && cd .zsh && git clone https://github.com/zsh-users/zsh-autosuggestions.git)
-    else
-        echo "Skipping zsh-autosuggestions."
-        echo "You should remove that from this script and your .zshrc."
-    fi
     echo "Terminal Tooling: Done."
 
 
@@ -73,9 +70,23 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
 
 
     # Symlink Dots
-    (cd ~; ln -s ./dev/.zshrc ./)
-    (cd ~; ln -s ./dev/.vimrc ./)
-    echo "Symlink Dots: Done."
+    if [ -f ~/.zshrc ]; then
+        (mv ~/.zshrc ~/.zshrc_MOVED)
+        echo "WARNING: .zshrc file already exists. Renaming before creating symlink."
+    fi
+        (cd ~; ln -s ./dev/.zshrc ./)
+
+    if [ ! -f ~/.vimrc ]; then
+        (cd ~; ln -s ./dev/.vimrc ./)
+    else
+        echo "Error: .vimrc file already exists. Symlink not created."
+    fi
+
+
+    # Env Vars
+    (cp ./.zshrc_vars ~/)
+    echo "Env Vars: WIP. Blank env var file copied to usr dir. It must be filed out to work."
+
 
     echo "_____________________________________________";
     echo "Init. Complete";

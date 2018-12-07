@@ -2,8 +2,13 @@
 source .zshrc_vars
 
 
+# env vars
+export RSCLI_GITHUB_KEY=$RSCLI_GITHUB_KEY
+export LESS="-F -g -i -M -R -S -w -X -z-4"
+
+
 # Fish-like autocomplete for zsh!
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 
 # Source Prezto. (Sorin Ionescu - sorin.ionescu@gmail.com)
@@ -58,10 +63,6 @@ function sshcolor() {
 }
 
 
-# env vars
-export RSCLI_GITHUB_KEY=$RSCLI_GITHUB_KEY
-
-
 # Vagrant Connect: vbox [which vagrant] ['clean' - restarts vagrant first])
 function vbox() {
   if [[ "$1" == "bafs" ]]; then
@@ -85,6 +86,7 @@ alias cwmycli='mycli -h 192.168.50.4 -u root'
 
 
 # misc
+alias cls='clear; ls';
 alias bstat='clear; git branch; git status'
 alias printsql='echo mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqllogin='mysql -h 192.168.50.4 -u root -P 3306 -p'
