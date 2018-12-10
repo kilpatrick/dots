@@ -13,9 +13,11 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
 
     # Install Homebrew
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    echo "Homebrew: Done."
 
 
     # TODO: Install Pip
+    echo "Pip: Skipped."
 
 
     # Prezto
@@ -25,6 +27,7 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
             ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}" \
         done'
     chsh -s $(which zsh)
+    echo "Prezto: Done."
 
 
     # JavaScript
@@ -69,18 +72,19 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     echo "Github Settings: Done."
 
 
-    # Symlink Dots
+    # Dots
     if [ -f ~/.zshrc ]; then
-        (mv ~/.zshrc ~/.zshrc_MOVED)
+        (mv ~/.zshrc ~/.zshrc_PREVIOUS)
         echo "WARNING: .zshrc file already exists. Renaming before creating symlink."
     fi
-        (cd ~; ln -s ./dev/.zshrc ./)
+    (cd ~; ln -s ./dev/.zshrc ./)
 
-    if [ ! -f ~/.vimrc ]; then
-        (cd ~; ln -s ./dev/.vimrc ./)
-    else
-        echo "Error: .vimrc file already exists. Symlink not created."
+    if [ -f ~/.vimrc ]; then
+        (mv ~/.vimrc ~/.vimrc_PREVIOUS)
+        echo "WARNING: .vimrc file already exists. Renaming before creating symlink."
     fi
+    (cd ~; ln -s ./dev/.vimrc ./)
+    echo "Dots: Done."
 
 
     # Env Vars
@@ -89,7 +93,7 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
 
 
     echo "_____________________________________________";
-    echo "Init. Complete";
+    echo "Initialization Complete.";
 
 else
     echo "Initialization Aborted."
