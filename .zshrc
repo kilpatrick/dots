@@ -3,8 +3,8 @@ source .zshrc_vars
 
 
 # env vars
-export RSCLI_GITHUB_KEY=$RSCLI_GITHUB_KEY
 export LESS="-F -g -i -M -R -S -w -X -z-4"
+export RSCLI_GITHUB_KEY=$RSCLI_GITHUB_KEY
 
 
 # Fish-like autocomplete for zsh!
@@ -80,14 +80,14 @@ function vbox() {
 }
 
 
-# aliases (Work)
-alias cwdir='cd ~/dev/bafs/clearwater'
-alias cwmycli='mycli -h 192.168.50.4 -u root'
-
-
-# misc
-alias cls='clear; ls';
+# misc 
 alias bstat='clear; git branch; git status'
+alias cls='clear; ls';
+alias cwdir='cd ~/dev/bafs/clearwater'
+alias cwcoverage='cwdir; (cd commotion; yarn run test-w-coverage)'
+alias cwlint='cwdir; (cd commotion; ./node_modules/.bin/eslint src/)'
+alias cwmycli='mycli -h 192.168.50.4 -u root'
+alias cwtest='cwdir; (cd commotion; yarn run test)'
 alias printsql='echo mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqllogin='mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqlstart='echo mysql.server start'

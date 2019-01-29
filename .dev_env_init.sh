@@ -11,6 +11,18 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     echo "                                             ";
 
 
+    # Git Setup
+    # Generate a new SSH key for github and add it to your account.
+    # Add your name and email address used in github to your global git settings:
+    echo "github username: "
+    read gh_user
+    git config --global user.name "$gh_user"
+    echo "github email: "
+    read gh_email
+    git config --global user.email "$gh_email"
+    echo "Github Settings: Done."
+
+
     # Install Homebrew
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     echo "Homebrew: Done."
@@ -22,10 +34,14 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
 
     # Prezto
     git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
-    /usr/bin/env zsh -c 'setopt EXTENDED_GLOB\
-        for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do \
-            ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}" \
-        done'
+    # /usr/bin/env zsh -c 'setopt EXTENDED_GLOB\
+    #     for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do \
+    #         ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}" \
+    #     done'
+    setopt EXTENDED_GLOB
+    for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
+      ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+    done
     chsh -s $(which zsh)
     echo "Prezto: Done."
 
@@ -55,21 +71,14 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
 
 
     # Terminal Tooling
-    brew install curl htop lynx mycli nmap ripgrep the_silver_searcher tmux vim zsh-autosuggestions # fish git mysql
+    brew install curl htop lynx mycli nmap ripgrep the_silver_searcher tmux vim zsh-autosuggestions
     pip install riverstone-cli
     echo "Terminal Tooling: Done."
 
 
-    # Git Setup
-    # Generate a new SSH key for github and add it to your account.
-    # Add your name and email address used in github to your global git settings:
-    echo "github username: "
-    read gh_user
-    git config --global user.name "$gh_user"
-    echo "github email: "
-    read gh_email
-    git config --global user.email "$gh_email"
-    echo "Github Settings: Done."
+    # Vim Extensions
+    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+    vim +PluginInstall +qall
 
 
     # Dots
@@ -77,14 +86,20 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
         (mv ~/.zshrc ~/.zshrc_PREVIOUS)
         echo "WARNING: .zshrc file already exists. Renaming before creating symlink."
     fi
-    (cd ~; ln -s ./dev/.zshrc ./)
+    (cd ~; ln -s ./dev/dots/.zshrc ./)
 
     if [ -f ~/.vimrc ]; then
         (mv ~/.vimrc ~/.vimrc_PREVIOUS)
         echo "WARNING: .vimrc file already exists. Renaming before creating symlink."
     fi
-    (cd ~; ln -s ./dev/.vimrc ./)
+    (cd ~; ln -s ./dev/dots/.vimrc ./)
     echo "Dots: Done."
+
+    if [ -f ~/Library/Preferences/com.googlecode.iterm2.plist ]; then
+        (mv ~/.zshrc ~/.zshrc_PREVIOUS)
+        echo "WARNING: com.googlecode.iterm2.plist file already exists. Renaming before creating symlink."
+    fi
+    (cd ~/Library/Preferences/; ln -s ../../dev/dots/iterm/com.googlecode.iterm2.plist ./)
 
 
     # Env Vars
