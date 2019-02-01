@@ -1,12 +1,17 @@
 #!/bin/bash
 
+top_padding="\n-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --"
+bottom_padding="-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --\n"
+
+
 echo "WARNING: This should only be run on a new system."
 echo "Are you sure want to continue? (y/n)"
 read continue_rsp
 
+
 if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     echo "_____________________________________________";
-    echo "        Initializing Dev Environment           ";
+    echo "        Initializing Dev Environment         ";
     echo "_____________________________________________";
     echo "                                             ";
 
@@ -34,10 +39,6 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
 
     # Prezto
     git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
-    # /usr/bin/env zsh -c 'setopt EXTENDED_GLOB\
-    #     for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do \
-    #         ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}" \
-    #     done'
     setopt EXTENDED_GLOB
     for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
       ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
@@ -81,33 +82,49 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     vim +PluginInstall +qall
 
 
+    # Sublime CLI
+    if [ -f ~/bin/subl ]; then
+        echo $top_padding
+        echo "WARNING: ~/bin/subl already exists. Symlink Not Created."
+        echo $bottom_padding
+    else
+        ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" ~/bin/subl
+    fi
+
+
     # Dots
     if [ -f ~/.zshrc ]; then
         (mv ~/.zshrc ~/.zshrc_PREVIOUS)
+        echo $top_padding
         echo "WARNING: .zshrc file already exists. Renaming before creating symlink."
+        echo $bottom_padding
     fi
     (cd ~; ln -s ./dev/dots/.zshrc ./)
 
     if [ -f ~/.vimrc ]; then
         (mv ~/.vimrc ~/.vimrc_PREVIOUS)
+        echo $top_padding
         echo "WARNING: .vimrc file already exists. Renaming before creating symlink."
+        echo $bottom_padding
     fi
     (cd ~; ln -s ./dev/dots/.vimrc ./)
     echo "Dots: Done."
 
     if [ -f ~/Library/Preferences/com.googlecode.iterm2.plist ]; then
         (mv ~/.zshrc ~/.zshrc_PREVIOUS)
+        echo $top_padding
         echo "WARNING: com.googlecode.iterm2.plist file already exists. Renaming before creating symlink."
+        echo $bottom_padding
     fi
     (cd ~/Library/Preferences/; ln -s ../../dev/dots/iterm/com.googlecode.iterm2.plist ./)
 
 
     # Env Vars
     (cp ./.zshrc_vars ~/)
-    echo "Env Vars: WIP. Blank env var file copied to usr dir. It must be filed out to work."
+    echo "\nEnv Vars: WIP. Blank env var file copied to usr dir. It must be filed out to work."
 
 
-    echo "_____________________________________________";
+    echo "\n_____________________________________________";
     echo "Initialization Complete.";
 
 else
