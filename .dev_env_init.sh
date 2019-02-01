@@ -82,7 +82,7 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     vim +PluginInstall +qall
 
 
-    # Sublime CLI
+    # Sublime CLI and Preferences
     if [ -f ~/bin/subl ]; then
         echo $top_padding
         echo "WARNING: ~/bin/subl already exists. Symlink Not Created."
@@ -90,6 +90,15 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     else
         ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" ~/bin/subl
     fi
+
+    if [ -f ~/Library/Preferences/com.googlecode.iterm2.plist ]; then
+        (mv ~/Library/Preferences/com.googlecode.iterm2.plist ~/Library/Preferences/com.googlecode.iterm2.plist_PREVIOUS)
+        echo $top_padding
+        echo "WARNING: com.googlecode.iterm2.plist file already exists. Renaming before creating symlink."
+        echo $bottom_padding
+    fi
+    (cd ~/Library/Preferences/; ln -s ../../dev/dots/iterm/com.googlecode.iterm2.plist ./)
+    echo "IDE: Done."
 
 
     # Dots
@@ -109,14 +118,6 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     fi
     (cd ~; ln -s ./dev/dots/.vimrc ./)
     echo "Dots: Done."
-
-    if [ -f ~/Library/Preferences/com.googlecode.iterm2.plist ]; then
-        (mv ~/.zshrc ~/.zshrc_PREVIOUS)
-        echo $top_padding
-        echo "WARNING: com.googlecode.iterm2.plist file already exists. Renaming before creating symlink."
-        echo $bottom_padding
-    fi
-    (cd ~/Library/Preferences/; ln -s ../../dev/dots/iterm/com.googlecode.iterm2.plist ./)
 
 
     # Env Vars
