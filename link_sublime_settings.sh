@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 sublime_settings_files=(
