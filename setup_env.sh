@@ -1,10 +1,46 @@
-#!/bin/bash
+#!/bin/zsh
+
+function preflight_check() {
+    success="\e[32m ✓ \e[0m"
+    fail="\e[31m ✗ \e[0m"
+    can_proceed=true
+
+    zsh_path=/bin/zsh
+    if [ -f "$zsh_path" ]; then
+        echo "${success} zsh Installed"
+    fi
+    if [ ! -f "$zsh_path" ]; then
+        echo "${fail} zsh Not Installed"
+        can_proceed=false
+    fi
+
+    sublime_path=/Applications/Sublime\ Text.app/
+    if [ -d "$sublime_path" ]; then
+        echo "${success} Sublime Text Installed"
+    fi
+    if [ ! -d "$sublime_path" ]; then
+        echo "${fail} Sublime Text Not Installed"
+        can_proceed=false
+    fi
+
+    xcode_path="/Applications/Xcode.app/"
+    if [ -d "$sublime_path" ]; then
+        echo "${success} Xcode Text Installed"
+    fi
+    if [ ! -d "$sublime_path" ]; then
+        echo "${fail} Xcode Text Not Installed"
+        can_proceed=false
+    fi
+
+    echo Can Proceed: ${can_proceed}
+}
 
 top_padding="\n-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --"
 bottom_padding="-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --\n"
 
 
 echo "WARNING: This should only be run on a new system."
+preflight_check
 echo "Are you sure want to continue? (y/n)"
 read continue_rsp
 
