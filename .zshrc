@@ -39,26 +39,35 @@ function start() {
 }
 
 
-# COLOR SSH + iterm2 Profile Swap
+# iterm2 Profile Swap
+function setProfile() {
+  echo "\033]50;SetProfile=${1}\a";
+}
+
+
+# ssh + profile swapping
 function sshcolor() {
   if [[ "$1" == "test" ]]; then
-    echo "\033]50;SetProfile=TestBox\a";
+    setProfile TestBox;
     ssh $IP_TEST_BOX
   elif [[ "$1" == "prod" ]]; then
-    echo "\033]50;SetProfile=ProdBox\a";
+    setProfile ProdBox;
     ssh $IP_PROD_BOX
   elif [[ "$1" == "payments" ]]; then
-    echo "\033]50;SetProfile=Payments\a";
+    setProfile Payments;
     ssh $IP_PAYMENTS
   elif [[ "$1" == "ofs" ]]; then
-    echo "\033]50;SetProfile=ProdBox\a";
+    setProfile ProdBox;
     ssh $IP_OFS;
+  elif [[ "$1" == "demo" ]]; then
+    setProfile DemoBox;
+    ssh $IP_DEMO_BOX
   elif [[ -n "$1" ]]; then
     echo "I don't know about that server. ¯\_(ツ)_/¯";
-    echo "Did you mean 'test', 'prod', payments, or 'ofs'?";
+    echo "Did you mean 'test', 'prod', payments, demo, or 'ofs'?";
   else
     echo "Gonna need a server name, Bro.";
-    echo "Did you mean 'test', 'prod', 'payments', or 'ofs'?";
+    echo "Did you mean 'test', 'prod', payments, demo, or 'ofs'?";
   fi
 }
 
@@ -121,4 +130,11 @@ function tab () {
                 end tell
         end tell
 EOF
+}
+
+
+function work() {
+  tab "vbox bafs"
+  tab "start bafs clearwater commotion"
+  tab "start bafs clearwater"
 }
