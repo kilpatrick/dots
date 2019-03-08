@@ -1,0 +1,11 @@
+{
+	"extensions":
+	[
+		"cshtml"
+	],
+	"rulers":
+	[
+		120
+	],
+    "tab_size": 2,
+}
