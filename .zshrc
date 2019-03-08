@@ -46,7 +46,7 @@ function setProfile() {
 
 
 # ssh + profile swapping
-function sshcolor() {
+function sshc() {
   if [[ "$1" == "test" ]]; then
     setProfile TestBox;
     ssh $IP_TEST_BOX
@@ -91,9 +91,10 @@ function vbox() {
 
 # misc 
 alias bstat='clear; git branch; git status'
-alias cls='clear; ls';
-alias cwdir='cd ~/dev/bafs/clearwater'
+alias cls='clear; ls -A';
+alias cra='create-react-app'
 alias cwcoverage='cwdir; (cd commotion; yarn run test-w-coverage)'
+alias cwdir='cd ~/dev/bafs/clearwater'
 alias cwlint='cwdir; (cd commotion; ./node_modules/.bin/eslint src/)'
 alias cwmycli='mycli -h 192.168.50.4 -u root'
 alias cwtest='cwdir; (cd commotion; yarn run test)'
