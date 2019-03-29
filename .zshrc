@@ -49,7 +49,7 @@ function setProfile() {
 function sshc() {
   if [[ "$1" == "test" ]]; then
     setProfile TestBox;
-    ssh $IP_TEST_BOX
+    ssh $USER_TEST_BOX
   elif [[ "$1" == "prod" ]]; then
     setProfile ProdBox;
     ssh $IP_PROD_BOX
@@ -96,12 +96,21 @@ alias cra='create-react-app'
 alias cwcoverage='cwdir; (cd commotion; yarn run test-w-coverage)'
 alias cwdir='cd ~/dev/bafs/clearwater'
 alias cwlint='cwdir; (cd commotion; ./node_modules/.bin/eslint src/)'
-alias cwmycli='mycli -h 192.168.50.4 -u root'
 alias cwtest='cwdir; (cd commotion; yarn run test)'
 alias printsql='echo mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqllogin='mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqlstart='echo mysql.server start'
 alias sqlstop='echo mysql.server stop'
+
+
+function cwmycli () {
+  if [[ "$1" == "test" ]]; then
+    setProfile TestBox;
+        mycli -h $IP_TEST_BOX -u root
+  else
+    mycli -h 192.168.50.4 -u root
+  fi
+}
 
 
 # Lock the screen (when going AFK) <- Negative impact on wake w/ external display

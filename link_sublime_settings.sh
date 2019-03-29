@@ -22,7 +22,7 @@ sublime_settings_files=(
 
 for filename in $sublime_settings_files; do
     # TODO: Check to see if these exists already.
-    (cd ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/ && ln -s  "../../../../../dev/dots/SublimeUserSettings/${filename}" "./${filename}")
+    (cd ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/ && rm -rf "./${filename}" && ln -s  "../../../../../dev/dots/SublimeUserSettings/${filename}" "./${filename}")
 done
 
 # SublimeLinter/Monokai (SL).tmTheme
