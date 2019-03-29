@@ -49,19 +49,19 @@ function setProfile() {
 function sshc() {
   if [[ "$1" == "test" ]]; then
     setProfile TestBox;
-    ssh $USER_TEST_BOX
+    ssh $USER_TEST_BOX@$IP_TEST_BOX
   elif [[ "$1" == "prod" ]]; then
     setProfile ProdBox;
-    ssh $IP_PROD_BOX
+    ssh $USER_PROD_BOX@$IP_PROD_BOX
   elif [[ "$1" == "payments" ]]; then
     setProfile Payments;
-    ssh $IP_PAYMENTS
+    ssh $USER_PAYMENTS@$IP_PAYMENTS
   elif [[ "$1" == "ofs" ]]; then
     setProfile ProdBox;
-    ssh $IP_OFS;
+    ssh $USER_OFS@$IP_OFS;
   elif [[ "$1" == "demo" ]]; then
     setProfile DemoBox;
-    ssh $IP_DEMO_BOX
+    ssh $USER_DEMO_BOX@$IP_DEMO_BOX;
   elif [[ -n "$1" ]]; then
     echo "I don't know about that server. ¯\_(ツ)_/¯";
     echo "Did you mean 'test', 'prod', payments, demo, or 'ofs'?";
@@ -106,8 +106,14 @@ alias sqlstop='echo mysql.server stop'
 function cwmycli () {
   if [[ "$1" == "test" ]]; then
     setProfile TestBox;
+        echo Connecting to Test db...
         mycli -h $IP_TEST_BOX -u root
+  elif [[ "$1" == "demo" ]]; then
+    setProfile DemoBox;
+        echo Connecting to Demo db...
+        mycli -h $IP_DEMO_BOX -u root
   else
+    echo Connecting to local mysql db...
     mycli -h 192.168.50.4 -u root
   fi
 }
