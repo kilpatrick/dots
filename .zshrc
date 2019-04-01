@@ -16,6 +16,15 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
+function grepTest() {
+  testString=$("chris" | grep -ic "chris")
+  if [[ ( 1 == 1) ]]; then
+    echo $testString
+  else
+    echo 'No'
+  fi
+}
+
 
 # Jump to Project Directory - takes proj. parent and proj. name
 function start() {
@@ -101,6 +110,8 @@ alias printsql='echo mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqllogin='mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqlstart='echo mysql.server start'
 alias sqlstop='echo mysql.server stop'
+alias glare='setProfile Agnosterish-LowGlare'
+alias noglare='setProfile Agnosterish'
 
 
 function cwmycli () {
