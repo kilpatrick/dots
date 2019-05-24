@@ -3,6 +3,7 @@
 cd /vagrant;
 
 alias bstat='clear; git branch; git status'
+alias cls='clear; ls -A'
 alias printtoken='(source .venv/bin/activate; cd tools; python generate_tombstone_token.py 9)'
 alias iexited='"iexited" was removed. Use "der" instead.'
 function der() {

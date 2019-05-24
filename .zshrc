@@ -161,7 +161,7 @@ EOF
 
 
 function work() {
-  tab "vbox bafs"
-  tab "start bafs clearwater commotion"
-  tab "start bafs clearwater"
+  tab "$1; vbox bafs"
+  tab "$1; start bafs clearwater commotion"
+  tab "$1; start bafs clearwater"
 }
