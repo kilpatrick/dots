@@ -1,0 +1,6 @@
+// These settings override both User and Default settings for the Markdown syntax
+{
+        "word_wrap": true,
+        "tab_size": 2,
+        "translate_tabs_to_spaces": true,
+}

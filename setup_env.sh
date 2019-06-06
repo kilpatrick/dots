@@ -1,10 +1,46 @@
-#!/bin/bash
+#!/bin/zsh
+
+function preflight_check() {
+    success="\e[32m ✓ \e[0m"
+    fail="\e[31m ✗ \e[0m"
+    can_proceed=true
+
+    zsh_path=/bin/zsh
+    if [ -f "$zsh_path" ]; then
+        echo "${success} zsh Installed"
+    fi
+    if [ ! -f "$zsh_path" ]; then
+        echo "${fail} zsh Not Installed"
+        can_proceed=false
+    fi
+
+    sublime_path=/Applications/Sublime\ Text.app/
+    if [ -d "$sublime_path" ]; then
+        echo "${success} Sublime Text Installed"
+    fi
+    if [ ! -d "$sublime_path" ]; then
+        echo "${fail} Sublime Text Not Installed"
+        can_proceed=false
+    fi
+
+    xcode_path="/Applications/Xcode.app/"
+    if [ -d "$sublime_path" ]; then
+        echo "${success} Xcode Text Installed"
+    fi
+    if [ ! -d "$sublime_path" ]; then
+        echo "${fail} Xcode Text Not Installed"
+        can_proceed=false
+    fi
+
+    echo Can Proceed: ${can_proceed}
+}
 
 top_padding="\n-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --"
 bottom_padding="-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --\n"
 
 
 echo "WARNING: This should only be run on a new system."
+preflight_check
 echo "Are you sure want to continue? (y/n)"
 read continue_rsp
 
@@ -17,8 +53,6 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
 
 
     # Git Setup
-    # Generate a new SSH key for github and add it to your account.
-    # Add your name and email address used in github to your global git settings:
     echo "github username: "
     read gh_user
     git config --global user.name "$gh_user"
@@ -62,7 +96,7 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
 
     # VM
     brew cask install vagrant
-    brew cask install virtualbox
+    # brew cask install virtualbox # Install this manually without brew
     echo "VM: Done."
 
 
@@ -72,7 +106,7 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
 
 
     # Terminal Tooling
-    brew install curl htop lynx mycli nmap ripgrep the_silver_searcher tmux vim zsh-autosuggestions
+    brew install curl htop lynx mysql mycli nmap ripgrep the_silver_searcher tmux vim zsh-autosuggestions       
     pip install riverstone-cli
     echo "Terminal Tooling: Done."
 
@@ -82,23 +116,16 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     vim +PluginInstall +qall
 
 
-    # Sublime CLI and Preferences
-    if [ -f ~/bin/subl ]; then
-        echo $top_padding
-        echo "WARNING: ~/bin/subl already exists. Symlink Not Created."
-        echo $bottom_padding
-    else
-        ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" ~/bin/subl
-    fi
-
+    # CLI Preferences
     if [ -f ~/Library/Preferences/com.googlecode.iterm2.plist ]; then
-        (mv ~/Library/Preferences/com.googlecode.iterm2.plist ~/Library/Preferences/com.googlecode.iterm2.plist_PREVIOUS)
         echo $top_padding
         echo "WARNING: com.googlecode.iterm2.plist file already exists. Renaming before creating symlink."
         echo $bottom_padding
+        (mv ~/Library/Preferences/com.googlecode.iterm2.plist ~/Library/Preferences/com.googlecode.iterm2.plist_PREVIOUS)
     fi
     (cd ~/Library/Preferences/; ln -s ../../dev/dots/iterm/com.googlecode.iterm2.plist ./)
-    echo "IDE: Done."
+
+    echo "CLI: Done."
 
 
     # Dots
@@ -127,6 +154,11 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
 
     echo "\n_____________________________________________";
     echo "Initialization Complete.";
+    echo "_____________________________________________\n";
+    echo "You still need to:"
+    echo "- [ ] Install VirtualBox"
+    echo "- [ ] Generate keys and add pub key to github"
+    echo "- [ ] Add values to  ~/.zshrc_vars \n"
 
 else
     echo "Initialization Aborted."

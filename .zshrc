@@ -16,6 +16,15 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
+function grepTest() {
+  testString=$("chris" | grep -ic "chris")
+  if [[ ( 1 == 1) ]]; then
+    echo $testString
+  else
+    echo 'No'
+  fi
+}
+
 
 # Jump to Project Directory - takes proj. parent and proj. name
 function start() {
@@ -46,22 +55,22 @@ function setProfile() {
 
 
 # ssh + profile swapping
-function sshcolor() {
+function sshc() {
   if [[ "$1" == "test" ]]; then
     setProfile TestBox;
-    ssh $IP_TEST_BOX
+    ssh $USER_TEST_BOX@$IP_TEST_BOX
   elif [[ "$1" == "prod" ]]; then
     setProfile ProdBox;
-    ssh $IP_PROD_BOX
+    ssh $USER_PROD_BOX@$IP_PROD_BOX
   elif [[ "$1" == "payments" ]]; then
     setProfile Payments;
-    ssh $IP_PAYMENTS
+    ssh $USER_PAYMENTS@$IP_PAYMENTS
   elif [[ "$1" == "ofs" ]]; then
     setProfile ProdBox;
-    ssh $IP_OFS;
+    ssh $USER_OFS@$IP_OFS;
   elif [[ "$1" == "demo" ]]; then
     setProfile DemoBox;
-    ssh $IP_DEMO_BOX
+    ssh $USER_DEMO_BOX@$IP_DEMO_BOX;
   elif [[ -n "$1" ]]; then
     echo "I don't know about that server. ¯\_(ツ)_/¯";
     echo "Did you mean 'test', 'prod', payments, demo, or 'ofs'?";
@@ -91,16 +100,34 @@ function vbox() {
 
 # misc 
 alias bstat='clear; git branch; git status'
-alias cls='clear; ls';
-alias cwdir='cd ~/dev/bafs/clearwater'
+alias cls='clear; ls -A';
+alias cra='create-react-app'
 alias cwcoverage='cwdir; (cd commotion; yarn run test-w-coverage)'
+alias cwdir='cd ~/dev/bafs/clearwater'
 alias cwlint='cwdir; (cd commotion; ./node_modules/.bin/eslint src/)'
-alias cwmycli='mycli -h 192.168.50.4 -u root'
 alias cwtest='cwdir; (cd commotion; yarn run test)'
 alias printsql='echo mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqllogin='mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqlstart='echo mysql.server start'
 alias sqlstop='echo mysql.server stop'
+alias glare='setProfile Agnosterish-LowGlare'
+alias noglare='setProfile Agnosterish'
+
+
+function cwmycli () {
+  if [[ "$1" == "test" ]]; then
+    setProfile TestBox;
+        echo Connecting to Test db...
+        mycli -h $IP_TEST_BOX -u root
+  elif [[ "$1" == "demo" ]]; then
+    setProfile DemoBox;
+        echo Connecting to Demo db...
+        mycli -h $IP_DEMO_BOX -u root
+  else
+    echo Connecting to local mysql db...
+    mycli -h 192.168.50.4 -u root
+  fi
+}
 
 
 # Lock the screen (when going AFK) <- Negative impact on wake w/ external display
@@ -134,7 +161,7 @@ EOF
 
 
 function work() {
-  tab "vbox bafs"
-  tab "start bafs clearwater commotion"
-  tab "start bafs clearwater"
+  tab "$1; vbox bafs"
+  tab "$1; start bafs clearwater commotion"
+  tab "$1; start bafs clearwater"
 }

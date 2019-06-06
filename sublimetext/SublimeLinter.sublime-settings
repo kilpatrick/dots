@@ -1,0 +1,5 @@
+// SublimeLinter Settings - User
+{
+    "delay": 0.25,
+    "gutter_theme": "Packages/SublimeLinter/gutter-themes/Default/Default.gutter-theme",
+}
