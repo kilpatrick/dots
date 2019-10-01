@@ -43,7 +43,7 @@ function start() {
         git status
       fi
   else
-    print "Parent dir and project dir required."
+    print "Parent dir and project dir required. 💫 T.M.Y.K."
   fi
 }
 
@@ -75,7 +75,7 @@ function sshc() {
     echo "I don't know about that server. ¯\_(ツ)_/¯";
     echo "Did you mean 'test', 'prod', payments, demo, or 'ofs'?";
   else
-    echo "Gonna need a server name, Bro.";
+    echo "Gonna need a server name, Bro. 😎";
     echo "Did you mean 'test', 'prod', payments, demo, or 'ofs'?";
   fi
 }
@@ -84,7 +84,7 @@ function sshc() {
 # Vagrant Connect: vbox [which vagrant] ['clean' - restarts vagrant first])
 function vbox() {
   if [[ "$1" == "bafs" ]]; then
-    print "Connecting to BAFS vagrant box ..."
+    print "Connecting to 'bafs' vagrant box ..."
     cd ~/dev/bafs/clearwater;
     if [[ "$2" == "clean" ]]; then
       vagrant halt
@@ -93,19 +93,23 @@ function vbox() {
   elif [[ -n "$1" ]]; then
     echo "I don't know about that vagrant machine. ¯\_(ツ)_/¯";
   else
-    print "Which box? Probably 'bafs', right?"
+    print "Which box? Probably, 'bafs', right? 🏢🏦"
   fi
 }
 
 
 # misc 
-alias bstat='clear; git branch; git status'
+alias bs='clear; git branch; git status'
+alias bstat='clear; git branch; git status; echo "\n  *bs* is shorter and does the same thing. Just sayin. 👀 \n"' 
+alias wip='git add . && git commit -m "WIP [skip ci]"'
+
 alias cls='clear; ls -A';
 alias cra='create-react-app'
-alias cwcoverage='cwdir; (cd commotion; yarn run test-w-coverage)'
-alias cwdir='cd ~/dev/bafs/clearwater'
-alias cwlint='cwdir; (cd commotion; ./node_modules/.bin/eslint src/)'
-alias cwtest='cwdir; (cd commotion; yarn run test)'
+alias cwcoverage='cwd; (cd commotion; yarn run test-w-coverage)'
+alias cwd='cd ~/dev/bafs/clearwater'
+alias cwdir='cd ~/dev/bafs/clearwater; echo "\n  *cwd* 👀  \n"' 
+alias cwlint='cwd; (cd commotion; ./node_modules/.bin/eslint src/)'
+alias cwtest='cwd; (cd commotion; yarn run test)'
 alias printsql='echo mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqllogin='mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqlstart='echo mysql.server start'
