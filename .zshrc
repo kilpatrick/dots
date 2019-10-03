@@ -110,12 +110,14 @@ alias cwd='cd ~/dev/bafs/clearwater'
 alias cwdir='cd ~/dev/bafs/clearwater; echo "\n  *cwd* 👀  \n"' 
 alias cwlint='cwd; (cd commotion; ./node_modules/.bin/eslint src/)'
 alias cwtest='cwd; (cd commotion; yarn run test)'
+alias env3='source .venv3/bin/activate'
+alias glare='setProfile Agnosterish-LowGlare'
+alias noglare='setProfile Agnosterish'
 alias printsql='echo mysql -h 192.168.50.4 -u root -P 3306 -p'
+alias repl='cwd && env3 && ipython'
 alias sqllogin='mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqlstart='echo mysql.server start'
 alias sqlstop='echo mysql.server stop'
-alias glare='setProfile Agnosterish-LowGlare'
-alias noglare='setProfile Agnosterish'
 
 
 function cwmycli () {
