@@ -12,6 +12,8 @@
 		"Package Control",
 		"Pretty JSON",
 		"SublimeLinter",
+		"SublimeLinter-contrib-mypy",
+		"SublimeLinter-contrib-sqlint",
 		"SublimeLinter-eslint",
 		"SublimeLinter-flake8",
 		"SublimeLinter-pep8",
