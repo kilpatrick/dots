@@ -133,6 +133,7 @@ function cwmycli () {
         echo Connecting to Demo db...
         mycli -h $IP_DEMO_BOX -u root
   else
+    setProfile Agnosterish-Brown;
     echo Connecting to local mysql db...
     mycli -h 192.168.50.4 -u root
   fi
@@ -168,6 +169,31 @@ function tab () {
 EOF
 }
 
+# TODO: Should do nothing if not given at least some seconds
+function timer() {
+   if [[ $2 == min ]]; then;
+     let START_COUNT="$1*60"
+     let SECONDS_REMAINING="$1*60"
+     if [[ -n "$3" ]]; then
+      let SECONDS_REMAINING=SECONDS_REMAINING+$3
+     fi
+   else
+     START_COUNT=$1
+     SECONDS_REMAINING=$1
+  fi
+   while [  $SECONDS_REMAINING -gt 0 ]; do
+       if [[ SECONDS_REMAINING -eq START_COUNT ]]; then
+         printf "\n ⏲️   $SECONDS_REMAINING"
+       else
+        printf "-$SECONDS_REMAINING"
+       fi
+       sleep 1
+       let SECONDS_REMAINING=SECONDS_REMAINING-1 
+   done
+   echo "\n 🏁 Fin. 🏁 \n"
+   echo -en "\07"; sleep 0.333; echo -en "\07"; sleep 0.333; echo -en "\07"
+   echo -en "\07"; sleep 0.333; echo -en "\07"; sleep 0.333; echo -en "\07"
+}
 
 function work() {
   tab "$1; vbox bafs"
