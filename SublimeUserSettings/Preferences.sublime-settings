@@ -4,7 +4,8 @@
 	"font_size": 11,
 	"ignored_packages":
 	[
-		"Vintage"
+		"Vintage",
+		"zzz A File Icon zzz"
 	],
 	"ignored_words":
 	[
