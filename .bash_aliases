@@ -9,16 +9,21 @@ alias iexited='"iexited" was removed. Use "der" instead.'
 
 
 function der() {
-    echo "__________"    docker ps -f "status=running" | grep -ic "   up " | perl -ne 'print "Running: $_"'
+    echo "__________"
+    docker ps -f "status=running" | grep -ic "   up " | perl -ne 'print "Running: $_"'
     docker ps -f "status=exited" | grep -ic " exited " | perl -ne 'print "Exited: $_"'
     echo "-----------"
-    # TODO: Only run next line if it has exited containers
-    docker ps -f "status=exited"
+
+    let exit_count=$(docker ps -f "status=exited" | grep -ic " exited ")
+    if [[ $exit_count -gt 0 ]]; then
+      docker ps -f "status=exited"
+    fi
     echo
 }
 
 
 function follow() { 
+  # $1    string    container to serach (just the base name no cw or num)
   if [[ -n "$1" ]]; then
       docker logs "cw_${1}_1" --tail 7 -f
   else
@@ -28,6 +33,8 @@ function follow() {
 
 
 function dgrep() {
+  # $1    string    container to serach (just the base name no cw or num)
+  # $2    string    query to search the logs for
   if [[ -n "$1" ]]; then
       if [[ -n "$2" ]]; then
         echo "Running: docker logs cw_${1}_1 2>&1 | grep '${2}' "
@@ -43,6 +50,9 @@ function dgrep() {
 
 
 function timer() {
+  # $1    number    time to search for - defaults to seconds
+  # $2    enum    optional - use "min" to have $1 treated as minutes
+  # $3    string    optional - if using minutes, seconds may be passed here
    if [[ "$2" == "min" ]]; then
      let START_COUNT="$1*60"
      let SECONDS_REMAINING="$1*60"
@@ -69,6 +79,7 @@ function timer() {
 
 
 function clean() {
+  # $1    enum    pass 'yolo' to bypass wait before reporting status 
   if [[ "$1" == "yolo" ]]; then
     make clean; time make build; echo '"Finished" in YOLO mode.'; der
   else 
