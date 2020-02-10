@@ -1,4 +1,4 @@
 // These settings override both User and Default settings for the Python syntax
 {
-"rulers": [88]
+"rulers": [100]
 }
