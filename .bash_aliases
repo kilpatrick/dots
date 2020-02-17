@@ -37,8 +37,13 @@ function dgrep() {
   # $2    string    query to search the logs for
   if [[ -n "$1" ]]; then
       if [[ -n "$2" ]]; then
-        echo "Running: docker logs cw_${1}_1 2>&1 | grep '${2}' "
-        docker logs "cw_${1}_1" 2>&1 | grep "${2}"
+        if [[ -n "$3" ]]; then
+          echo "Running: docker logs cw_${1}_1 2>&1 | grep -B 5 -A ${3} '${2}' "
+          docker logs "cw_${1}_1" 2>&1 | grep -B 5 -A "${3}" "${2}"
+        else
+          echo "Running: docker logs cw_${1}_1 2>&1 | grep -B 5 -A 5 '${2}' "
+          docker logs "cw_${1}_1" 2>&1 | grep -B 5 -A 5 "${2}"
+        fi
       else
         echo "What am I searching for? 🦡 "
       fi
@@ -51,7 +56,7 @@ function dgrep() {
 
 function timer() {
   # $1    number    time to search for - defaults to seconds
-  # $2    enum    optional - use "min" to have $1 treated as minutes
+  # $2    enum      optional - use "min" to have $1 treated as minutes
   # $3    string    optional - if using minutes, seconds may be passed here
    if [[ "$2" == "min" ]]; then
      let START_COUNT="$1*60"
@@ -81,13 +86,13 @@ function timer() {
 function clean() {
   # $1    enum    pass 'yolo' to bypass wait before reporting status 
   if [[ "$1" == "yolo" ]]; then
-    make clean; time make build; echo '"Finished" in YOLO mode.'; der
+    make clean; time make build; echo '"Finished" in YOLO mode. Things may be down in 45 seconds.'; der
   else 
-    make clean; time make build; echo 'Logging container statuses in...'; timer 45; der
+    make clean; time make build; echo '"Finished" Just to be sure, logging container statuses in...'; timer 45; der
   fi
 }
 
 
 function blank() {
-  make blank-restart; echo 'Running postbuild in... '; timer 45; make postbuild; der
+  make blank-restart; echo 'Running postbuild in... '; timer 60; make postbuild; der
 }
