@@ -115,12 +115,15 @@ alias env3='source .venv3/bin/activate'
 alias glare='setProfile Agnosterish-LowGlare'
 alias noglare='setProfile Agnosterish'
 alias brown='setProfile Agnosterish-Brown'
+alias greenay='setProfile Agnosterish-Greenay'
 
 alias printsql='echo mysql -h 192.168.50.4 -u root -P 3306 -p'
-alias repl='cwd && env3 && ipython'
+alias repl='greenay; cwd && env3 && ipython'
 alias sqllogin='mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqlstart='echo mysql.server start'
 alias sqlstop='echo mysql.server stop'
+
+alias bf='black -t py38 -l 100'
 
 
 function cwmycli () {
@@ -132,6 +135,8 @@ function cwmycli () {
     setProfile DemoBox;
         echo Connecting to Demo db...
         mycli -h $IP_DEMO_BOX -u root
+  elif [[ -n "$1" ]]; then
+      print "${1} is not a valid connection box."
   else
     setProfile Agnosterish-Brown;
     echo Connecting to local mysql db...
