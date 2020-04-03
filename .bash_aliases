@@ -2,7 +2,7 @@
 
 cd /vagrant;
 
-alias bstat='clear; git branch; git status'
+alias bs='clear; git branch; git status'
 alias cls='clear; ls -A'
 alias printtoken='(source .venv/bin/activate; cd tools; python generate_tombstone_token.py 9)'
 alias iexited='"iexited" was removed. Use "der" instead.'
@@ -82,17 +82,21 @@ function timer() {
    echo -en "\07"; sleep 0.333; echo -en "\07"; sleep 0.333; echo -en "\07"
 }
 
+# ======================================================================================== #
+# ========================  WARNING: Use Cation Below This Point  ======================== #
+# ======================================================================================== #
 
 function clean() {
   # $1    enum    pass 'yolo' to bypass wait before reporting status 
-  if [[ "$1" == "yolo" ]]; then
-    make clean; time make build; echo '"Finished" in YOLO mode. Things may be down in 45 seconds.'; der
-  else 
+  if [[ "$1" == "safe" ]]; then
     make clean; time make build; echo '"Finished" Just to be sure, logging container statuses in...'; timer 45; der
+  else 
+    make clean; time make build; echo '"Finished" in YOLO mode. (Optional "safe" param not passed.)'; der
   fi
 }
 
 
 function blank() {
-  make blank-restart; echo 'Running postbuild in... '; timer 60; make postbuild; der
+  # make blank-restart; echo 'Running postbuild in... '; timer 60; make postbuild; der
+  echo "This isn't a problem any more."
 }

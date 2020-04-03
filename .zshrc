@@ -1,5 +1,5 @@
 # Import vars
-source .zshrc_vars
+source ~/.zshrc_vars
 
 
 # env vars
@@ -61,7 +61,8 @@ function sshc() {
     ssh $USER_TEST_BOX@$IP_TEST_BOX
   elif [[ "$1" == "prod" ]]; then
     setProfile ProdBox;
-    ssh $USER_PROD_BOX@$IP_PROD_BOX
+    ssh -t chrisk@192.168.11.203 'ssh chrisk@192.168.11.228'
+    ssh -t $USER_TEST_BOX@$IP_TEST_BOX 'ssh $USER_PROD_BOX@$IP_PROD_BOX'
   elif [[ "$1" == "payments" ]]; then
     setProfile Payments;
     ssh $USER_PAYMENTS@$IP_PAYMENTS
@@ -71,12 +72,15 @@ function sshc() {
   elif [[ "$1" == "demo" ]]; then
     setProfile DemoBox;
     ssh $USER_DEMO_BOX@$IP_DEMO_BOX;
+  elif [[ "$1" == "other" ]]; then
+    setProfile OtherBox;
+    ssh $USER_OTHER_BOX@$IP_OTHER_BOX;
   elif [[ -n "$1" ]]; then
     echo "I don't know about that server. ¯\_(ツ)_/¯";
-    echo "Did you mean 'test', 'prod', payments, demo, or 'ofs'?";
+    echo "Did you mean 'test', 'prod', 'payments', 'demo', 'other', or 'ofs'?";
   else
     echo "Gonna need a server name, Bro. 😎";
-    echo "Did you mean 'test', 'prod', payments, demo, or 'ofs'?";
+    echo "Did you mean 'test', 'prod', 'payments', 'demo', 'other', or 'ofs'?";
   fi
 }
 
@@ -111,6 +115,7 @@ alias cwdir='cd ~/dev/bafs/clearwater; echo "\n  *cwd* 👀  \n"'
 alias cwlint='cwd; (cd commotion; ./node_modules/.bin/eslint src/)'
 alias cwtest='cwd; (cd commotion; yarn run test)'
 alias env3='source .venv3/bin/activate'
+alias env2='source .venv2/bin/activate'
 
 alias glare='setProfile Agnosterish-LowGlare'
 alias noglare='setProfile Agnosterish'
