@@ -8,6 +8,23 @@ alias printtoken='(source .venv/bin/activate; cd tools; python generate_tombston
 alias iexited='"iexited" was removed. Use "der" instead.'
 
 
+function transpiler() {
+  if [[ "$1" == "off" ]]; then
+    export SKIP_COMMOTION_TRANSPILE=true
+    export SKIP_BLAST_TRANSPILE=true
+    echo "SKIP_COMMOTION_TRANSPILE=true"
+    echo "SKIP_BLAST_TRANSPILE=true"
+  elif [[ "$1" == "on" ]]; then
+    export SKIP_COMMOTION_TRANSPILE=false
+    export SKIP_BLAST_TRANSPILE=false
+    echo "SKIP_COMMOTION_TRANSPILE=false"
+    echo "SKIP_BLAST_TRANSPILE=false"
+  else
+    echo "Tu veux ça 'on' ou 'off' ?"
+  fi
+}
+
+
 function der() {
     echo "__________"
     docker ps -f "status=running" | grep -ic "   up " | perl -ne 'print "Running: $_"'
@@ -23,7 +40,7 @@ function der() {
 
 
 function follow() { 
-  # $1    string    container to serach (just the base name no cw or num)
+  # $1    string    container to search (just the base name no cw or num)
   if [[ -n "$1" ]]; then
       docker logs "cw_${1}_1" --tail 7 -f
   else
@@ -32,8 +49,9 @@ function follow() {
 }
 
 
+# TODO: Facilitate tab completion by dropping end char if it is "/" 
 function dgrep() {
-  # $1    string    container to serach (just the base name no cw or num)
+  # $1    string    container to search (just the base name no cw or num)
   # $2    string    query to search the logs for
   if [[ -n "$1" ]]; then
       if [[ -n "$2" ]]; then
@@ -46,6 +64,25 @@ function dgrep() {
         fi
       else
         echo "What am I searching for? 🦡 "
+      fi
+
+  else
+    echo "You just want to search all the logs? Nah. Give me a container, Brah. 🏄"
+  fi
+}
+
+
+# TODO: Facilitate tab completion by dropping end char if it is "/" 
+function dlogs() {
+  # $1    string    container to search (just the base name no cw or num)
+  # $2    string    number of lines for tail
+  if [[ -n "$1" ]]; then
+      if [[ -n "$2" ]]; then
+        echo "Running: docker logs cw_${1}_1 --tail ${2}"
+        docker logs "cw_${1}_1" --tail "${2}"
+      else
+        echo "Running: docker logs cw_${1}_1 --tail 345"
+        docker logs "cw_${1}_1" --tail "345"
       fi
 
   else
@@ -83,20 +120,22 @@ function timer() {
 }
 
 # ======================================================================================== #
-# ========================  WARNING: Use Cation Below This Point  ======================== #
+# =====================  WARNING: Below This Point for Vagrant Only  ===================== #
+# =====================           (not for remote servers)           ===================== #
 # ======================================================================================== #
 
 function clean() {
-  # $1    enum    pass 'yolo' to bypass wait before reporting status 
-  if [[ "$1" == "safe" ]]; then
-    make clean; time make build; echo '"Finished" Just to be sure, logging container statuses in...'; timer 45; der
+  if [[ "$1" == "js" ]]; then
+    transpiler on; make clean; time make build; timer 5; der; echo "Done."; echo 'Ran with Transpiling turned on.'; 
   else 
-    make clean; time make build; echo '"Finished" in YOLO mode. (Optional "safe" param not passed.)'; der
+    transpiler off; make clean; time make build; timer 5; der; echo "Done."; echo 'Warning: Skipped Transpiling. Run with "js" to transpile Commotion and Spreads'; 
   fi
 }
 
-
 function blank() {
-  # make blank-restart; echo 'Running postbuild in... '; timer 60; make postbuild; der
-  echo "This isn't a problem any more."
+  if [[ "$1" == "js" ]]; then
+    transpiler on; time make blank-restart; timer 5; der; echo "Done."; echo 'Ran with Transpiling turned on.'; 
+  else 
+    transpiler off; time make blank-restart; timer 5; der; echo "Done."; echo 'Warning: Skipped Transpiling. Run with "js" to transpile Commotion and Spreads'; 
+  fi
 }

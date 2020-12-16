@@ -56,25 +56,36 @@ function setProfile() {
 
 # ssh + profile swapping
 function sshc() {
-  if [[ "$1" == "test" ]]; then
+  if [[ "$1" == "test" ]] || [[ "$1" == "dev" ]]; then
     setProfile TestBox;
+    if [[ "$1" == "test" ]] then
+      echo "Some people like to call this 'Dev'? 🍅 🥔"
+    fi
+    echo "Connecting to Dev at ${IP_TEST_BOX} ..."
     ssh $USER_TEST_BOX@$IP_TEST_BOX
   elif [[ "$1" == "prod" ]]; then
     setProfile ProdBox;
-    ssh -t chrisk@192.168.11.203 'ssh chrisk@192.168.11.228'
-    ssh -t $USER_TEST_BOX@$IP_TEST_BOX 'ssh $USER_PROD_BOX@$IP_PROD_BOX'
+    echo "Connecting to Prod at ${IP_PROD_BOX} ..."
+    # This is currently broken.
+    # ssh -t $USER_TEST_BOX@$IP_TEST_BOX 'ssh $USER_PROD_BOX@$IP_PROD_BOX'
+
+    # Use this for now, but don't commit it.
+    ssh -t $USER_TEST_BOX@$IP_TEST_BOX 'ssh chrisk@192.168.11.223'
   elif [[ "$1" == "payments" ]]; then
     setProfile Payments;
+    echo "Connecting to Payments at ${IP_PAYMENTS} ..."
     ssh $USER_PAYMENTS@$IP_PAYMENTS
   elif [[ "$1" == "ofs" ]]; then
     setProfile ProdBox;
+    echo "Connecting to OFS at ${IP_OFS} ..."
     ssh $USER_OFS@$IP_OFS;
   elif [[ "$1" == "demo" ]]; then
     setProfile DemoBox;
+    echo "Connecting to Demo at ${IP_DEMO_BOX} ..."
     ssh $USER_DEMO_BOX@$IP_DEMO_BOX;
-  elif [[ "$1" == "other" ]]; then
-    setProfile OtherBox;
-    ssh $USER_OTHER_BOX@$IP_OTHER_BOX;
+  elif [[ "$1" == "migration" ]]; then
+    setProfile MigrationBox;
+    echo "Migration box currently disabeled ..."
   elif [[ -n "$1" ]]; then
     echo "I don't know about that server. ¯\_(ツ)_/¯";
     echo "Did you mean 'test', 'prod', 'payments', 'demo', 'other', or 'ofs'?";
@@ -83,6 +94,9 @@ function sshc() {
     echo "Did you mean 'test', 'prod', 'payments', 'demo', 'other', or 'ofs'?";
   fi
 }
+
+
+# TODO: Write subl search open func for  subl $(rg -l SomeSearchQuery ./some_dir)
 
 
 # Vagrant Connect: vbox [which vagrant] ['clean' - restarts vagrant first])
@@ -101,12 +115,13 @@ function vbox() {
   fi
 }
 
-
-# misc 
+# Git
 alias bs='clear; git branch; git status'
 alias bstat='clear; git branch; git status; echo "\n  *bs* is shorter and does the same thing. Just sayin. 👀 \n"' 
 alias wip='git add . && git commit -m "WIP [skip ci]"'
+alias update='wip && git pull --rebase origin master && git reset HEAD~'
 
+# Misc Shortcuts
 alias cls='clear; ls -A';
 alias cra='create-react-app'
 alias cwcoverage='cwd; (cd commotion; yarn run test-w-coverage)'
@@ -117,24 +132,27 @@ alias cwtest='cwd; (cd commotion; yarn run test)'
 alias env3='source .venv3/bin/activate'
 alias env2='source .venv2/bin/activate'
 
+# Terminal Settings
 alias glare='setProfile Agnosterish-LowGlare'
 alias noglare='setProfile Agnosterish'
 alias brown='setProfile Agnosterish-Brown'
 alias greenay='setProfile Agnosterish-Greenay'
 
+# sql
 alias printsql='echo mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias repl='greenay; cwd && env3 && ipython'
 alias sqllogin='mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqlstart='echo mysql.server start'
 alias sqlstop='echo mysql.server stop'
 
+# linting / ci
 alias bf='black -t py38 -l 100'
 
 
 function cwmycli () {
-  if [[ "$1" == "test" ]]; then
+  if [[ "$1" == "test" ]] || [[ "$1" == "dev" ]]; then
     setProfile TestBox;
-        echo Connecting to Test db...
+        echo Connecting to Dev db...
         mycli -h $IP_TEST_BOX -u root
   elif [[ "$1" == "demo" ]]; then
     setProfile DemoBox;
@@ -143,7 +161,7 @@ function cwmycli () {
   elif [[ -n "$1" ]]; then
       print "${1} is not a valid connection box."
   else
-    setProfile Agnosterish-Brown;
+    setProfile Agnosterish-Greenay; # Formerly: Agnosterish-Brown
     echo Connecting to local mysql db...
     mycli -h 192.168.50.4 -u root
   fi
@@ -210,3 +228,7 @@ function work() {
   tab "$1; start bafs clearwater commotion"
   tab "$1; start bafs clearwater"
 }
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
