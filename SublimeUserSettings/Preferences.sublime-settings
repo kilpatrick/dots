@@ -1,11 +1,10 @@
 {
 	"color_scheme": "Packages/User/SublimeLinter/Monokai (SL).tmTheme",
 	"draw_white_space": "all",
-	"font_size": 11,
+	"font_size": 12,
 	"ignored_packages":
 	[
-		"Vintage",
-		"zzz A File Icon zzz"
+		"Vintage"
 	],
 	"ignored_words":
 	[
@@ -13,7 +12,7 @@
 		"eslint"
 	],
 	"open_files_in_new_window": false,
-	"theme": "Default.sublime-theme",
+	"theme": "Adaptive.sublime-theme",
 	"translate_tabs_to_spaces": true,
 	"word_wrap": false
 }
