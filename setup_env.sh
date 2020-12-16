@@ -88,10 +88,17 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     echo "JavaScript: Done."
 
 
+
     # Python
-    brew install pyenv
-    pip install ipython[all] pipenv virtualenv # flake8 nose numpy pep8 pylint
-    echo "Python: Done."
+    # --- Verify this section -----
+    # Get python3
+    # brew install python
+    # virtual env setup is now: python3 -m venv ./.venv_name
+    # I think pipenv and viertualenv are deprecated
+    # --- Mostly Deprecated Things? -----
+    # brew install pyenv
+    # pip install ipython[all] pipenv virtualenv # flake8 nose numpy pep8 pylint
+    echo "Python: Skipped."
 
 
     # VM
@@ -123,7 +130,7 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
         echo $bottom_padding
         (mv ~/Library/Preferences/com.googlecode.iterm2.plist ~/Library/Preferences/com.googlecode.iterm2.plist_PREVIOUS)
     fi
-    (cd ~/Library/Preferences/; ln -s ../../dev/dots/iterm/com.googlecode.iterm2.plist ./)
+    (cd ~/Library/Preferences/; ln -s ../../dev/kilpatrick/dots/iterm/com.googlecode.iterm2.plist ./)
 
     echo "CLI: Done."
 
@@ -135,7 +142,7 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
         echo "WARNING: .zshrc file already exists. Renaming before creating symlink."
         echo $bottom_padding
     fi
-    (cd ~; ln -s ./dev/dots/.zshrc ./)
+    (cd ~; ln -s ./dev/kilpatrick/dots/.zshrc ./)
 
     if [ -f ~/.vimrc ]; then
         (mv ~/.vimrc ~/.vimrc_PREVIOUS)
@@ -143,7 +150,7 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
         echo "WARNING: .vimrc file already exists. Renaming before creating symlink."
         echo $bottom_padding
     fi
-    (cd ~; ln -s ./dev/dots/.vimrc ./)
+    (cd ~; ln -s ./dev/kilpatrick/dots/.vimrc ./)
     echo "Dots: Done."
 
 
