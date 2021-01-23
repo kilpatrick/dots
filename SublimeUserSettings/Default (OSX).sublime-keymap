@@ -7,4 +7,7 @@
     { "keys": ["super+shift+b"], "command": "" },
     // { "keys": ["ctrl+c"], "command": "cancel_build" },
     { "keys": ["ctrl+c"], "command": "" },
+    { "keys": ["ctrl+alt+enter"], "command": "replace_all", "args": {"close_panel": false},
+         "context": [{"key": "panel", "operand": "replace"}, {"key": "panel_has_focus"}]
+    },
 ]

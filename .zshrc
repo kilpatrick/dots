@@ -16,15 +16,6 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
-function grepTest() {
-  testString=$("chris" | grep -ic "chris")
-  if [[ ( 1 == 1) ]]; then
-    echo $testString
-  else
-    echo 'No'
-  fi
-}
-
 
 # Jump to Project Directory - takes proj. parent and proj. name
 function start() {
@@ -55,22 +46,19 @@ function setProfile() {
 
 
 # ssh + profile swapping
+# 'MigrationBox' is an availablbe, but currently unused color profile
 function sshc() {
   if [[ "$1" == "test" ]] || [[ "$1" == "dev" ]]; then
     setProfile TestBox;
     if [[ "$1" == "test" ]] then
-      echo "Some people like to call this 'Dev'? 🍅 🥔"
+      echo "Some people like to call this 'Dev'? 🥔 🍅"
     fi
     echo "Connecting to Dev at ${IP_TEST_BOX} ..."
     ssh $USER_TEST_BOX@$IP_TEST_BOX
   elif [[ "$1" == "prod" ]]; then
     setProfile ProdBox;
     echo "Connecting to Prod at ${IP_PROD_BOX} ..."
-    # This is currently broken.
-    # ssh -t $USER_TEST_BOX@$IP_TEST_BOX 'ssh $USER_PROD_BOX@$IP_PROD_BOX'
-
-    # Use this for now, but don't commit it.
-    ssh -t $USER_TEST_BOX@$IP_TEST_BOX 'ssh chrisk@192.168.11.223'
+    ssh $USER_PROD_BOX@$IP_PROD_BOX;
   elif [[ "$1" == "payments" ]]; then
     setProfile Payments;
     echo "Connecting to Payments at ${IP_PAYMENTS} ..."
@@ -83,9 +71,10 @@ function sshc() {
     setProfile DemoBox;
     echo "Connecting to Demo at ${IP_DEMO_BOX} ..."
     ssh $USER_DEMO_BOX@$IP_DEMO_BOX;
-  elif [[ "$1" == "migration" ]]; then
-    setProfile MigrationBox;
-    echo "Migration box currently disabeled ..."
+  elif [[ "$1" == "fyn" ]]; then
+    setProfile ProdBox;
+    echo "Connecting to Prod at ${IP_FYN_PROD} with user '${USER_FYN_PROD}'..."
+    ssh $USER_FYN_PROD@$IP_FYN_PROD;
   elif [[ -n "$1" ]]; then
     echo "I don't know about that server. ¯\_(ツ)_/¯";
     echo "Did you mean 'test', 'prod', 'payments', 'demo', 'other', or 'ofs'?";
@@ -124,11 +113,8 @@ alias update='wip && git pull --rebase origin master && git reset HEAD~'
 # Misc Shortcuts
 alias cls='clear; ls -A';
 alias cra='create-react-app'
-alias cwcoverage='cwd; (cd commotion; yarn run test-w-coverage)'
 alias cwd='cd ~/dev/bafs/clearwater'
 alias cwdir='cd ~/dev/bafs/clearwater; echo "\n  *cwd* 👀  \n"' 
-alias cwlint='cwd; (cd commotion; ./node_modules/.bin/eslint src/)'
-alias cwtest='cwd; (cd commotion; yarn run test)'
 alias env3='source .venv3/bin/activate'
 alias env2='source .venv2/bin/activate'
 
@@ -161,7 +147,7 @@ function cwmycli () {
   elif [[ -n "$1" ]]; then
       print "${1} is not a valid connection box."
   else
-    setProfile Agnosterish-Greenay; # Formerly: Agnosterish-Brown
+    setProfile Agnosterish-Greenay;
     echo Connecting to local mysql db...
     mycli -h 192.168.50.4 -u root
   fi
@@ -197,6 +183,7 @@ function tab () {
 EOF
 }
 
+
 # TODO: Should do nothing if not given at least some seconds
 function timer() {
    if [[ "$2" == "min" ]]; then
@@ -223,11 +210,13 @@ function timer() {
    echo -en "\07"; sleep 0.333; echo -en "\07"; sleep 0.333; echo -en "\07"
 }
 
+
 function work() {
   tab "$1; vbox bafs"
   tab "$1; start bafs clearwater commotion"
   tab "$1; start bafs clearwater"
 }
+
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
