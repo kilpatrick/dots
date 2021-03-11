@@ -24,10 +24,10 @@ function preflight_check() {
     fi
 
     xcode_path="/Applications/Xcode.app/"
-    if [ -d "$sublime_path" ]; then
+    if [ -d "$xcode_path" ]; then
         echo "${success} Xcode Text Installed"
     fi
-    if [ ! -d "$sublime_path" ]; then
+    if [ ! -d "$xcode_path" ]; then
         echo "${fail} Xcode Text Not Installed"
         can_proceed=false
     fi
@@ -45,21 +45,24 @@ echo "Are you sure want to continue? (y/n)"
 read continue_rsp
 
 
-if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
+# if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
+if [[ "m1 and brew issues resolved," == "then replace this line with above and rerun."  ]]; then
     echo "_____________________________________________";
     echo "        Initializing Dev Environment         ";
     echo "_____________________________________________";
     echo "                                             ";
 
 
+    # [✓] M1
     # Git Setup
-    echo "github username: "
-    read gh_user
-    git config --global user.name "$gh_user"
-    echo "github email: "
-    read gh_email
-    git config --global user.email "$gh_email"
-    echo "Github Settings: Done."
+    # Do this manually
+    # echo "github username: "
+    # read gh_user
+    # git config --global user.name "$gh_user"
+    # echo "github email: "
+    # read gh_email
+    # git config --global user.email "$gh_email"
+    # echo "Github Settings: Done."
 
 
     # Install Homebrew
@@ -71,7 +74,8 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     echo "Pip: Skipped."
 
 
-    # Prezto
+    # [✓] M1
+    # zsh theming with Prezto
     git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
     setopt EXTENDED_GLOB
     for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
@@ -81,8 +85,14 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     echo "Prezto: Done."
 
 
+    # [✓] M1
+    # Fish-like autocomplete for zsh!
+    (cd ~/dev && mkdir zsh-users && cd zsh-users && git clone https://github.com/zsh-users/zsh-autosuggestions.git)
+
+
     # JavaScript
-    brew install node watchman yarn
+    # brew install node watchman yarn
+    brew install node yarn
     npm install n
     yarn global add json-server
     echo "JavaScript: Done."
@@ -98,12 +108,13 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     # --- Mostly Deprecated Things? -----
     # brew install pyenv
     # pip install ipython[all] pipenv virtualenv # flake8 nose numpy pep8 pylint
-    echo "Python: Skipped."
+    python3 -m venv .venv3
+    echo "Python: **Mostly** Skipped."
 
 
     # VM
-    brew cask install vagrant
-    # brew cask install virtualbox # Install this manually without brew
+    echo "skipping 'brew cask install vagrant' as 'cask' commands deprecated in brew >= 2.6"
+    echo "virtualbox installation skipped"
     echo "VM: Done."
 
 
@@ -123,6 +134,7 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     vim +PluginInstall +qall
 
 
+    # [✓] M1
     # CLI Preferences
     if [ -f ~/Library/Preferences/com.googlecode.iterm2.plist ]; then
         echo $top_padding
@@ -135,6 +147,7 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     echo "CLI: Done."
 
 
+    # [✓] M1
     # Dots
     if [ -f ~/.zshrc ]; then
         (mv ~/.zshrc ~/.zshrc_PREVIOUS)
@@ -154,6 +167,7 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     echo "Dots: Done."
 
 
+    # [✓] M1
     # Env Vars
     (cp ./.zshrc_vars ~/)
     echo "\nEnv Vars: WIP. Blank env var file copied to usr dir. It must be filed out to work."
@@ -166,7 +180,11 @@ if [[ $continue_rsp == "yes" || $continue_rsp == "y" ]]; then
     echo "- [ ] Install VirtualBox"
     echo "- [ ] Generate keys and add pub key to github"
     echo "- [ ] Add values to  ~/.zshrc_vars \n"
+    echo "- [ ] Run link_sublime_settings.sh and manually move the theme folder."
+    echo "- [ ] Generate SSH keys"
+    # SublimeText theme folder location: /Users/kilpatrick/Library/Application Support/Sublime Text 3/Packages/User/SublimeLinter
 
 else
+    echo "Script disabled until all M1 fixes in place."
     echo "Initialization Aborted."
 fi

@@ -1,0 +1,7 @@
+// SublimeLinter Settings - User
+{
+    // Provide extra paths to be searched when locating system executables.
+    "paths": {
+        "osx": ["/opt/homebrew/bin"],
+    },
+}

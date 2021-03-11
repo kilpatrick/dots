@@ -10,16 +10,8 @@
 		"Babel",
 		"Git blame",
 		"Package Control",
-		"Pretty JSON",
 		"SublimeLinter",
-		"SublimeLinter-contrib-mypy",
-		"SublimeLinter-contrib-sqlint",
-		"SublimeLinter-contrib-yamllint",
-		"SublimeLinter-eslint",
-		"SublimeLinter-flake8",
-		"SublimeLinter-json",
-		"SublimeLinter-pep8",
-		"SublimeLinter-pylint",
-		"TypeScript"
+		"SublimeLinter-contrib-terraform",
+		"Terraform"
 	]
 }

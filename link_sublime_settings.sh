@@ -22,10 +22,17 @@ sublime_settings_files=(
 
 for filename in $sublime_settings_files; do
     # TODO: Check to see if these exists already.
-    (cd ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/ && rm -rf "./${filename}" && ln -s  "../../../../../dev/dots/SublimeUserSettings/${filename}" "./${filename}")
+    (cd ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/ && rm -rf "./${filename}" && ln -s  "../../../../../dev/kilpatrick/dots/SublimeUserSettings/${filename}" "./${filename}")
 done
 
+
+# Symlink "subl" bin
+sudo ln -s /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl /usr/local/bin/subl
+
+
 # SublimeLinter/Monokai (SL).tmTheme
+
+echo "\nWarning: This is gonna be obvious when you open it, but the Sublime theme isn't linked by this script.\n"
 
 # INI
 # INI Syntax highlighting for Sublime Text 2

@@ -1,15 +1,33 @@
 # Import vars
 source ~/.zshrc_vars
 
+# yarn globals
+PATH=$PATH:~/.yarn/bin
+
+# nvm
+source ~/dev/lukechilds/zsh-nvm/zsh-nvm.plugin.zsh
+
+# zsh nvm auto-switching by Alejandro AR
+# kinduff.com/2016/09/14/automatic-version-switch-for-nvm
+# autoload -U add-zsh-hook
+# load-nvmrc() {
+#   if [[ -f .nvmrc && -r .nvmrc ]]; then
+#     nvm use
+#   elif [[ $(nvm version) != $(nvm version default)  ]]; then
+#     echo "Reverting to nvm default version"
+#     nvm use default
+#   fi
+# }
+# add-zsh-hook chpwd load-nvmrc
+# load-nvmrc
+
+
+# Fish-like autocomplete for zsh!
+source ~/dev/zsh-user/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # env vars
 export LESS="-F -g -i -M -R -S -w -X -z-4"
 export RSCLI_GITHUB_KEY=$RSCLI_GITHUB_KEY
-
-
-# Fish-like autocomplete for zsh!
-source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-
 
 # Source Prezto. (Sorin Ionescu - sorin.ionescu@gmail.com)
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
@@ -26,8 +44,10 @@ function start() {
         cd ${2}
       fi
       if [[ -n "$3" ]]; then
-        cd ${3}
-        yarn start
+        cd ${3};
+        nvm use;
+        setProfile Agnosterish-Brown;
+        yarn start;
       elif [[ -d ".git" ]]; then
         clear
         git branch
@@ -72,8 +92,8 @@ function sshc() {
     echo "Connecting to Demo at ${IP_DEMO_BOX} ..."
     ssh $USER_DEMO_BOX@$IP_DEMO_BOX;
   elif [[ "$1" == "fyn" ]]; then
-    setProfile ProdBox;
-    echo "Connecting to Prod at ${IP_FYN_PROD} with user '${USER_FYN_PROD}'..."
+    setProfile FynProdBox;
+    echo "Connecting to Fyn Prod at ${IP_FYN_PROD} with user '${USER_FYN_PROD}'..."
     ssh $USER_FYN_PROD@$IP_FYN_PROD;
   elif [[ -n "$1" ]]; then
     echo "I don't know about that server. ¯\_(ツ)_/¯";
@@ -92,7 +112,7 @@ function sshc() {
 function vbox() {
   if [[ "$1" == "bafs" ]]; then
     print "Connecting to 'bafs' vagrant box ..."
-    cd ~/dev/bafs/clearwater;
+    cd ~/dev/bafsllc/clearwater;
     if [[ "$2" == "clean" ]]; then
       vagrant halt
     fi
@@ -113,8 +133,8 @@ alias update='wip && git pull --rebase origin master && git reset HEAD~'
 # Misc Shortcuts
 alias cls='clear; ls -A';
 alias cra='create-react-app'
-alias cwd='cd ~/dev/bafs/clearwater'
-alias cwdir='cd ~/dev/bafs/clearwater; echo "\n  *cwd* 👀  \n"' 
+alias cwd='cd ~/dev/bafsllc/clearwater'
+alias cwdir='cd ~/dev/bafsllc/clearwater; echo "\n  *cwd* 👀  \n"' 
 alias env3='source .venv3/bin/activate'
 alias env2='source .venv2/bin/activate'
 
@@ -136,21 +156,9 @@ alias bf='black -t py38 -l 100'
 
 
 function cwmycli () {
-  if [[ "$1" == "test" ]] || [[ "$1" == "dev" ]]; then
-    setProfile TestBox;
-        echo Connecting to Dev db...
-        mycli -h $IP_TEST_BOX -u root
-  elif [[ "$1" == "demo" ]]; then
-    setProfile DemoBox;
-        echo Connecting to Demo db...
-        mycli -h $IP_DEMO_BOX -u root
-  elif [[ -n "$1" ]]; then
-      print "${1} is not a valid connection box."
-  else
-    setProfile Agnosterish-Greenay;
-    echo Connecting to local mysql db...
-    mycli -h 192.168.50.4 -u root
-  fi
+  setProfile Agnosterish-Greenay;
+  echo Connecting to local mysql db...
+  mycli -h 192.168.50.4 -u root
 }
 
 
@@ -221,3 +229,6 @@ function work() {
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /opt/homebrew/bin/terraform terraform
