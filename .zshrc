@@ -95,6 +95,14 @@ function sshc() {
     setProfile FynProdBox;
     echo "Connecting to Fyn Prod at ${IP_FYN_PROD} with user '${USER_FYN_PROD}'..."
     ssh $USER_FYN_PROD@$IP_FYN_PROD;
+  elif [[ "$1" == "cloud-prod" ]]; then
+    setProfile CloudProd;
+    echo "Connecting to Cloud Prod at ${IP_CLOUD_PROD} ..."
+    ssh $USER_CLOUD_PROD@$IP_CLOUD_PROD;
+  elif [[ "$1" == "cloud-test" ]]; then
+    setProfile CloudTest;
+    echo "Connecting to Cloud Test at ${IP_CLOUD_TEST} ..."
+    ssh $USER_CLOUD_TEST@$IP_CLOUD_TEST;
   elif [[ -n "$1" ]]; then
     echo "I don't know about that server. ¯\_(ツ)_/¯";
     echo "Did you mean 'test', 'prod', 'payments', 'demo', 'other', or 'ofs'?";
