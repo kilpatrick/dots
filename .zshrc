@@ -23,13 +23,16 @@ source ~/dev/lukechilds/zsh-nvm/zsh-nvm.plugin.zsh
 
 
 # Fish-like autocomplete for zsh!
-source ~/dev/zsh-user/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ~/dev/zsh-users/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # env vars
 export LESS="-F -g -i -M -R -S -w -X -z-4"
 export RSCLI_GITHUB_KEY=$RSCLI_GITHUB_KEY
 
 # Source Prezto. (Sorin Ionescu - sorin.ionescu@gmail.com)
+echo "looking here: "
+echo "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
+echo "   "
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
@@ -46,7 +49,7 @@ function start() {
       if [[ -n "$3" ]]; then
         cd ${3};
         nvm use;
-        setProfile Agnosterish-Brown;
+        setProfile webpack_dev_server;
         yarn start;
       elif [[ -d ".git" ]]; then
         clear
@@ -59,14 +62,46 @@ function start() {
 }
 
 
+function pingRange() {
+  base="172.20.10."
+  let ENDING="1"
+  while [  $ENDING -lt 31 ]; do
+     ping ${base}${ENDING}
+     sleep 1
+     let ENDING=ENDING+1 
+  done
+}
+
+function oupi() {
+    echo "Everything:"
+    arp -na
+    echo ""
+    echo "Just the Pi ma'am:"
+    arp -na | grep -i "E4.5F"
+}
+
 # iterm2 Profile Swap
 function setProfile() {
   echo "\033]50;SetProfile=${1}\a";
 }
 
 
+function sshpi() {
+  echo "To which priority network is the pi currently connected? (0/1)"
+  read input_variable
+  if [[ $input_variable == 0 ]]; then
+    echo "Connecting to RaspberryPi at ${IP_PI_0} ..."
+    ssh $USER_PI@$IP_PI_0;
+  elif [[ $input_variable == 1 ]]; then
+    echo "Connecting to RaspberryPi at ${IP_PI_1} ..."
+    ssh $USER_PI@$IP_PI_1;
+  else
+    echo "Invalid network int."
+  fi
+
+}
+
 # ssh + profile swapping
-# 'MigrationBox' is an availablbe, but currently unused color profile
 function sshc() {
   if [[ "$1" == "test" ]] || [[ "$1" == "dev" ]]; then
     setProfile TestBox;
@@ -103,12 +138,20 @@ function sshc() {
     setProfile CloudTest;
     echo "Connecting to Cloud Test at ${IP_CLOUD_TEST} ..."
     ssh $USER_CLOUD_TEST@$IP_CLOUD_TEST;
+  elif [[ "$1" == "pi" ]]; then
+    setProfile PiBox;
+    sshpi
+  elif [[ "$1" == "v" ]]; then
+    setProfile vagrant;
+    cd ~/dev/bafsllc/clearwater;
+    vagrant up;
+    vagrant ssh;
   elif [[ -n "$1" ]]; then
     echo "I don't know about that server. ¯\_(ツ)_/¯";
-    echo "Did you mean 'test', 'prod', 'payments', 'demo', 'other', or 'ofs'?";
+    echo 'Did you mean "cloud-prod", "cloud-test", demo", fyn", ofs", payments", prod", or "test / dev"?';
   else
     echo "Gonna need a server name, Bro. 😎";
-    echo "Did you mean 'test', 'prod', 'payments', 'demo', 'other', or 'ofs'?";
+    echo 'Did you mean "cloud-prod", "cloud-test", demo", fyn", ofs", payments", prod", or "test / dev"?';
   fi
 }
 
@@ -116,20 +159,23 @@ function sshc() {
 # TODO: Write subl search open func for  subl $(rg -l SomeSearchQuery ./some_dir)
 
 
-# Vagrant Connect: vbox [which vagrant] ['clean' - restarts vagrant first])
-function vbox() {
-  if [[ "$1" == "bafs" ]]; then
-    print "Connecting to 'bafs' vagrant box ..."
-    cd ~/dev/bafsllc/clearwater;
-    if [[ "$2" == "clean" ]]; then
-      vagrant halt
-    fi
-    vagrant up; vagrant ssh
-  elif [[ -n "$1" ]]; then
-    echo "I don't know about that vagrant machine. ¯\_(ツ)_/¯";
+function show() {
+    if [[ "$1" == "--large-files" ]]; then
+      print 'This might take a sec. Running: ls -lahRS ./ | grep "[0-9][0-9][0-9]M \|G "'
+      print ""
+      ls -lahRS ./ | grep "[0-9][0-9][0-9]M \|G "
   else
-    print "Which box? Probably, 'bafs', right? 🏢🏦"
+      print "No valid option provided. Currently configured options: "
+      print " --large-files"
   fi
+}
+
+function oupi() {
+    echo "Everything:"
+    arp -na
+    echo ""
+    echo "Just the Pi ma'am:"
+    arp -na | grep -i "E4.5F"
 }
 
 # Git
@@ -139,7 +185,8 @@ alias wip='git add . && git commit -m "WIP [skip ci]"'
 alias update='wip && git pull --rebase origin master && git reset HEAD~'
 
 # Misc Shortcuts
-alias cls='clear; ls -A';
+alias cls='clear; ls -lAhS';
+alias xls='ls -lAhS';
 alias cra='create-react-app'
 alias cwd='cd ~/dev/bafsllc/clearwater'
 alias cwdir='cd ~/dev/bafsllc/clearwater; echo "\n  *cwd* 👀  \n"' 
@@ -149,12 +196,10 @@ alias env2='source .venv2/bin/activate'
 # Terminal Settings
 alias glare='setProfile Agnosterish-LowGlare'
 alias noglare='setProfile Agnosterish'
-alias brown='setProfile Agnosterish-Brown'
-alias greenay='setProfile Agnosterish-Greenay'
 
 # sql
 alias printsql='echo mysql -h 192.168.50.4 -u root -P 3306 -p'
-alias repl='greenay; cwd && env3 && ipython'
+alias repl='setProfile repl; cwd && env3 && ipython'
 alias sqllogin='mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqlstart='echo mysql.server start'
 alias sqlstop='echo mysql.server stop'
@@ -164,7 +209,7 @@ alias bf='black -t py38 -l 100'
 
 
 function cwmycli () {
-  setProfile Agnosterish-Greenay;
+  setProfile mycli;
   echo Connecting to local mysql db...
   mycli -h 192.168.50.4 -u root
 }

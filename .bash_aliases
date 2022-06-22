@@ -1,11 +1,71 @@
-# for vagrant ubuntu box
+# misc ubuntu / debian things
 
-cd /vagrant;
+# Typically helpful to add:
+# cd /[target_dir];
 
 alias bs='clear; git branch; git status'
-alias cls='clear; ls -A'
-alias printtoken='(source .venv/bin/activate; cd tools; python generate_tombstone_token.py 9)'
-alias iexited='"iexited" was removed. Use "der" instead.'
+alias cls='clear; ls -lAhS'
+alias xls='ls -lAhS';
+alias wip='git add . && git commit -m "WIP [skip ci]"'
+
+
+function auto_tmux() {
+  echo "Would you like to rejoin your last tmux session? (y/n)"
+  read input_variable
+  if [[ $input_variable == "y" ]]; then
+    echo "Joining ..."
+    tmux attach
+  elif [[ $input_variable == "n" ]]; then
+    echo "As you wish. Doing nothing."
+  else
+    echo "Give us a valid reply."
+    auto_tmux
+  fi
+}
+
+
+function help() {
+  if [[ "$1" == "wifi" ]]; then
+    echo "📎: Hi there! Looks like you're trying to use WiFi."
+    echo "Maybe you want to see networks. Try: wpa_cli list_networks"
+    echo "You can also switch with: wpa_cli -i wlan0 select_network [network int]"
+  elif [[ "$1" == "power" ]] || [[ "$1" == "shutdown" ]]; then
+    echo "📎: Howdy! Would you like help turning off this device?"
+    echo "  - The 'shutdown' command may have already been added to this device."
+    echo "  - Running 'shutdown' will just do: 'shutdown --poweroff now' with sudo."
+  else
+    echo "Configured help topics:"
+    echo "  - wifi"
+    echo "  - shutdown"
+  fi
+}
+
+function shutdown() {
+  echo "This will immediately power down this device. Are you sure? (yes/no)"
+  read input_variable
+  if [[ $input_variable == "yes" ]]; then
+    echo "As you wish. Shutting down device ..."
+    echo "Running shutdown --poweroff now (w/ sudoer privileges)"
+    sudo shutdown --poweroff now
+  elif [[ $input_variable == "no" ]]; then
+    echo "Wise choice. Doing nothing."
+  else
+    echo 'Please respond with "yes" or "no".'
+  fi
+}
+
+function build() {
+  echo "This will start a new build. Are you sure? (yes/no)"
+  read input_variable
+  if [[ $input_variable == "yes" ]]; then
+    echo "As you wish. Building ..."
+    source .venv/bin/activate && time .scripts/build_prod.sh && timer 15; der
+  elif [[ $input_variable == "no" ]]; then
+    echo "As you wish. Standing down."
+  else
+    echo 'Please respond with "yes" or "no".'
+  fi
+}
 
 
 function transpiler() {
@@ -20,12 +80,14 @@ function transpiler() {
     echo "SKIP_COMMOTION_TRANSPILE=false"
     echo "SKIP_BLAST_TRANSPILE=false"
   else
-    echo "Tu veux ça 'on' ou 'off' ?"
+    echo "Do you want transpiling 'on' or 'off'?"
   fi
 }
 
 
 function der() {
+    # (D)ocker (E)xit (R)atio
+    # Provides count of running/exited containers and name of any exited containers
     echo "__________"
     docker ps -f "status=running" | grep -ic "   up " | perl -ne 'print "Running: $_"'
     docker ps -f "status=exited" | grep -ic " exited " | perl -ne 'print "Exited: $_"'
@@ -39,10 +101,24 @@ function der() {
 }
 
 
+# TODO: Add optional arg to `follow` multiple containers at once.
+# usage: follow [base contiainer name] [number of containters to follow]
+# ex: `follow entities 3` which runs:
+#     docker logs -f --tail=0 entities_1 | sed -e 's/^/[-- entities_1 --]/' &
+#     docker logs -f --tail=0 entities_2 | sed -e 's/^/[-- entities_2 --]/' &
+#     docker logs -f --tail=0 entities_3 | sed -e 's/^/[-- entities_3 --]/' &
+# Might as well just extend follow to do this rather
+
 function follow() { 
   # $1    string    container to search (just the base name no cw or num)
+  # $2    number    (optional) TODO: See description above
   if [[ -n "$1" ]]; then
-      docker logs "cw_${1}_1" --tail 7 -f
+    last_char=${1: -1}
+    container_name="$1"
+    if [[ "${last_char}" == "/" ]]; then
+        container_name=$(sed 's/.\{1\}$//' <<< "$container_name")
+    fi
+      docker logs "cw_${container_name}_1" --tail 7 -f
   else
     echo "Gonna need a container, Captain. ⛵"
   fi
@@ -114,10 +190,11 @@ function timer() {
        sleep 1
        let SECONDS_REMAINING=SECONDS_REMAINING-1 
    done
-   printf "\n 🏁 Fin. 🏁 \n"
+   printf "\n 🏁 Done. 🏁 \n"
    echo -en "\07"; sleep 0.333; echo -en "\07"; sleep 0.333; echo -en "\07"
    echo -en "\07"; sleep 0.333; echo -en "\07"; sleep 0.333; echo -en "\07"
 }
+
 
 # ======================================================================================== #
 # =====================  WARNING: Below This Point for Vagrant Only  ===================== #
@@ -137,5 +214,13 @@ function blank() {
     transpiler on; time make blank-restart; timer 5; der; echo "Done."; echo 'Ran with Transpiling turned on.'; 
   else 
     transpiler off; time make blank-restart; timer 5; der; echo "Done."; echo 'Warning: Skipped Transpiling. Run with "js" to transpile Commotion and Spreads'; 
+  fi
+}
+
+function printtoken() {
+  if [[ -n "$1" ]]; then
+    (source .venv/bin/activate && cd tools && python generate_tombstone_token.py $1)
+  else
+    (source .venv/bin/activate && cd tools && python generate_tombstone_token.py 0.083)
   fi
 }

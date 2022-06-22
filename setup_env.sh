@@ -82,6 +82,22 @@ if [[ "m1 and brew issues resolved," == "then replace this line with above and r
       ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
     done
     chsh -s $(which zsh)
+    # If this fails, the probem is could be that you already had one of these files in place.
+    # If that's not it, you can manually symlink the files once ~/.zprezto is in place.
+    #     (cd ~ && ln -s ~/.zprezto/runcoms/zlogin ~/.zlogin)
+    #     (cd ~ && ln -s ~/.zprezto/runcoms/zlogout ~/.zlogout)
+    #     (cd ~ && ln -s ~/.zprezto/runcoms/zpreztorc ~/.zpreztorc)
+    #     (cd ~ && ln -s ~/.zprezto/runcoms/zprofile ~/.zprofile)
+    #     (cd ~ && ln -s ~/.zprezto/runcoms/zshenv ~/.zshenv)
+    #     (cd ~ && ln -s ~/.zprezto/runcoms/zshrc ~/.zshrc)
+    #
+    # Also see:
+    #     setopt EXTENDED_GLOB
+    #     for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
+    #       ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+    #     done
+    #     chsh -s $(which zsh)
+    #
     echo "Prezto: Done."
 
 
@@ -94,7 +110,7 @@ if [[ "m1 and brew issues resolved," == "then replace this line with above and r
     # brew install node watchman yarn
     brew install node yarn
     npm install n
-    yarn global add json-server
+    # yarn global add json-server
     echo "JavaScript: Done."
 
 
@@ -114,6 +130,7 @@ if [[ "m1 and brew issues resolved," == "then replace this line with above and r
 
     # VM
     echo "skipping 'brew cask install vagrant' as 'cask' commands deprecated in brew >= 2.6"
+    echo "instead use: brew install --cask vagrant"
     echo "virtualbox installation skipped"
     echo "VM: Done."
 
@@ -124,6 +141,7 @@ if [[ "m1 and brew issues resolved," == "then replace this line with above and r
 
 
     # Terminal Tooling
+    # brew install curl htop lynx mysql mycli nmap ripgrep the_silver_searcher tmux vim zsh-autosuggestions       
     brew install curl htop lynx mysql mycli nmap ripgrep the_silver_searcher tmux vim zsh-autosuggestions       
     pip install riverstone-cli
     echo "Terminal Tooling: Done."
@@ -182,6 +200,14 @@ if [[ "m1 and brew issues resolved," == "then replace this line with above and r
     echo "- [ ] Add values to  ~/.zshrc_vars \n"
     echo "- [ ] Run link_sublime_settings.sh and manually move the theme folder."
     echo "- [ ] Generate SSH keys"
+    echo "- [ ] Install SublimeText Extensions"
+    echo "        - Package Control"
+    echo "        - Package: A File Icon"
+    echo "        - Package: AutoFileName"
+    echo "        - Package: Git blame"
+    echo "        - Package: SublimeLinter"
+    echo "- [ ] Sublime Theme/Settings not fully synced list time. Check on those."
+
     # SublimeText theme folder location: /Users/kilpatrick/Library/Application Support/Sublime Text 3/Packages/User/SublimeLinter
 
 else
