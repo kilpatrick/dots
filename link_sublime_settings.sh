@@ -22,7 +22,10 @@ sublime_settings_files=(
 
 for filename in $sublime_settings_files; do
     # TODO: Check to see if these exists already.
-    (cd ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/ && rm -rf "./${filename}" && ln -s  "../../../../../dev/kilpatrick/dots/SublimeUserSettings/${filename}" "./${filename}")
+    # OLD - Sublime 3
+    #(cd ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/ && rm -rf "./${filename}" && ln -s  "../../../../../dev/kilpatrick/dots/SublimeUserSettings/${filename}" "./${filename}")
+    # SublimeText 4
+    (cd ~/Library/Application\ Support/Sublime\ Text/Packages/User/  && rm -rf "./${filename}" && ln -s  "../../../../../dev/kilpatrick/dots/SublimeUserSettings/${filename}" "./${filename}")
 done
 
 
@@ -42,6 +45,10 @@ echo "\nWarning: This is gonna be obvious when you open it, but the Sublime them
 # SublimeLinter 3 plugin for Ruby, using rubocop
 # github.com/SublimeLinter/SublimeLinter-rubocop
 
+#  SublimeText 4 (see: sublimetext.com/docs/command_line.html)
+#  echo 'export PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:$PATH"' >> ~/.zprofile
+
+# SublimeText 3
 #  Maybe this should be /usr/local/bin/subl
 # if [ -f ~/bin/subl ]; then
 #     echo $top_padding
