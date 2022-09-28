@@ -13,5 +13,5 @@
 		"SublimeLinter",
 		"SublimeLinter-contrib-terraform",
 		"Terraform"
-	]
+	],
 }

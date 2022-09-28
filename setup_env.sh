@@ -82,7 +82,7 @@ if [[ "m1 and brew issues resolved," == "then replace this line with above and r
       ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
     done
     chsh -s $(which zsh)
-    # If this fails, the probem is could be that you already had one of these files in place.
+    # If this fails, (and it probably will) the probem could be that you already had one of these files in place.
     # If that's not it, you can manually symlink the files once ~/.zprezto is in place.
     #     (cd ~ && ln -s ~/.zprezto/runcoms/zlogin ~/.zlogin)
     #     (cd ~ && ln -s ~/.zprezto/runcoms/zlogout ~/.zlogout)
@@ -196,7 +196,7 @@ if [[ "m1 and brew issues resolved," == "then replace this line with above and r
     echo "_____________________________________________\n";
     echo "You still need to:"
     echo "- [ ] Install VirtualBox"
-    echo "- [ ] Generate keys and add pub key to github"
+    echo "- [ ] Generate keys and add pub key to github" [ssh-keygen -t ecdsa -b 521]
     echo "- [ ] Add values to  ~/.zshrc_vars \n"
     echo "- [ ] Run link_sublime_settings.sh and manually move the theme folder."
     echo "- [ ] Generate SSH keys"

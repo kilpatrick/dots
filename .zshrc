@@ -4,11 +4,15 @@ source ~/.zshrc_vars
 # yarn globals
 PATH=$PATH:~/.yarn/bin
 
+# ipython
+PATH=$PATH:/Users/kilpatrick/Library/Python/3.8/bin
+
 # nvm
 source ~/dev/lukechilds/zsh-nvm/zsh-nvm.plugin.zsh
 
 # zsh nvm auto-switching by Alejandro AR
 # kinduff.com/2016/09/14/automatic-version-switch-for-nvm
+#
 # autoload -U add-zsh-hook
 # load-nvmrc() {
 #   if [[ -f .nvmrc && -r .nvmrc ]]; then
@@ -22,13 +26,39 @@ source ~/dev/lukechilds/zsh-nvm/zsh-nvm.plugin.zsh
 # load-nvmrc
 
 
+# zsh nvm auto-switching by github.com/nvm-sh/nvm
+#
+# autoload -U add-zsh-hook
+# load-nvmrc() {
+#   local node_version="$(nvm version)"
+#   local nvmrc_path="$(nvm_find_nvmrc)"
+#
+#   if [ -n "$nvmrc_path" ]; then
+#     local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+#
+#     if [ "$nvmrc_node_version" = "N/A" ]; then
+#       nvm install
+#     elif [ "$nvmrc_node_version" != "$node_version" ]; then
+#       nvm use
+#     fi
+#   elif [ "$node_version" != "$(nvm version default)" ]; then
+#     echo "Reverting to nvm default version"
+#     nvm use default
+#   fi
+# }
+# add-zsh-hook chpwd load-nvmrc
+# load-nvmrc
+
+
 # Fish-like autocomplete for zsh!
 source ~/dev/zsh-users/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # env vars
 export LESS="-F -g -i -M -R -S -w -X -z-4"
+export GITHUB_PACKAGES_READ_PAT=$GITHUB_PACKAGES_READ_PAT
 export RSCLI_GITHUB_KEY=$RSCLI_GITHUB_KEY
-
+export GITHUB_PAT=$GITHUB_PAT
+  
 # Source Prezto. (Sorin Ionescu - sorin.ionescu@gmail.com)
 echo "looking here: "
 echo "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
@@ -86,21 +116,6 @@ function setProfile() {
 }
 
 
-function sshpi() {
-  echo "To which priority network is the pi currently connected? (0/1)"
-  read input_variable
-  if [[ $input_variable == 0 ]]; then
-    echo "Connecting to RaspberryPi at ${IP_PI_0} ..."
-    ssh $USER_PI@$IP_PI_0;
-  elif [[ $input_variable == 1 ]]; then
-    echo "Connecting to RaspberryPi at ${IP_PI_1} ..."
-    ssh $USER_PI@$IP_PI_1;
-  else
-    echo "Invalid network int."
-  fi
-
-}
-
 # ssh + profile swapping
 function sshc() {
   if [[ "$1" == "test" ]] || [[ "$1" == "dev" ]]; then
@@ -138,9 +153,10 @@ function sshc() {
     setProfile CloudTest;
     echo "Connecting to Cloud Test at ${IP_CLOUD_TEST} ..."
     ssh $USER_CLOUD_TEST@$IP_CLOUD_TEST;
-  elif [[ "$1" == "pi" ]]; then
-    setProfile PiBox;
-    sshpi
+  elif [[ "$1" == "sam" ]]; then
+    setProfile sam;
+    echo "Connecting to S.A.M. at ${IP_SAM} ..."
+    ssh $USER_SAM@$IP_SAM;
   elif [[ "$1" == "v" ]]; then
     setProfile vagrant;
     cd ~/dev/bafsllc/clearwater;
@@ -189,6 +205,9 @@ alias cls='clear; ls -lAhS';
 alias xls='ls -lAhS';
 alias cra='create-react-app'
 alias cwd='cd ~/dev/bafsllc/clearwater'
+alias bcd='cd ~/dev/bafsllc/blast-client'
+alias bsd='cd ~/dev/bafsllc/blast-services'
+
 alias cwdir='cd ~/dev/bafsllc/clearwater; echo "\n  *cwd* 👀  \n"' 
 alias env3='source .venv3/bin/activate'
 alias env2='source .venv2/bin/activate'
@@ -223,7 +242,7 @@ alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resource
 # Original Author: Justin Hileman @bobthecow
 # Adapted by: Jack Coy @Jackman3005
 [ `uname -s` != "Darwin" ] && return
-function tab () {
+function new_tab () {
     local cdto="$PWD"
     local args="$@"
 
@@ -244,6 +263,21 @@ function tab () {
 EOF
 }
 
+
+# Note: This works well with iTerm. 
+# It will "work" with Apple's default Terminal, but it will leave your
+# shell name in the tab as well. Ex: `rename_tab Dev-Server` results in a
+# "Dev-Server" tab in iTerm, but a tab named "~- Dev-Server — -zsh > zsh"
+# in Apple's Terminal.
+function rename_tab() {
+    if [[ -n "$1" ]]; then
+      tab_name="$1"
+      echo -ne "\033]0;"${tab_name}"\007"
+    else
+      echo "No name provided"
+    fi
+
+}
 
 # TODO: Should do nothing if not given at least some seconds
 function timer() {
@@ -271,11 +305,22 @@ function timer() {
    echo -en "\07"; sleep 0.333; echo -en "\07"; sleep 0.333; echo -en "\07"
 }
 
+# TODO: Both of these start commands will leave an unused blank tab in the first position.
+function start_servers() {
+  new_tab "$1; sshc v" # doesn't use rename_tab as name will be replaced on ssh into vagrant
+  new_tab "$1; rename_tab "Commotion-Dev-Srv." && start bafsllc clearwater commotion"
+  new_tab "$1; rename_tab "Inst-Admin" && setProfile generic_dev_server; bcd && nvm use 14 && yarn start institution-admin"
+  new_tab "$1; rename_tab "CMS-Reports" && setProfile generic_dev_server; bcd && nvm use 14 && yarn start cms-reports-service"
+  new_tab "$1; rename_tab "Proxy-Server" && setProfile generic_dev_server; bcd && nvm use 14 && yarn start:proxy-server"
+  new_tab "$1; rename_tab "Proxy-Srv-Reports-Srv" && setProfile generic_dev_server; bcd && nvm use 14 && yarn proxy cms-reports-service"
+  new_tab "$1; rename_tab "Proxy-Inst-Admin" && setProfile generic_dev_server; bcd && nvm use 14 && yarn proxy institution-admin"
+  new_tab "$1; rename_tab "Storybook UI" && setProfile generic_dev_server; bcd && nvm use 14 && yarn nx run ui:build-storybook && yarn nx run ui:storybook"
+}
 
-function work() {
-  tab "$1; vbox bafs"
-  tab "$1; start bafs clearwater commotion"
-  tab "$1; start bafs clearwater"
+function start_work() {
+  new_tab "$1; rename_tab "clearwater" && cwd && env3 && bs"
+  new_tab "$1; rename_tab "blast-client" && bcd && bs"
+  new_tab "$1; rename_tab "blast-services" && bsd && bs"
 }
 
 

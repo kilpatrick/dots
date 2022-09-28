@@ -118,7 +118,7 @@ function follow() {
     if [[ "${last_char}" == "/" ]]; then
         container_name=$(sed 's/.\{1\}$//' <<< "$container_name")
     fi
-      docker logs "cw_${container_name}_1" --tail 7 -f
+      docker logs "cw-${container_name}_1" --tail 7 -f
   else
     echo "Gonna need a container, Captain. ⛵"
   fi
@@ -132,11 +132,11 @@ function dgrep() {
   if [[ -n "$1" ]]; then
       if [[ -n "$2" ]]; then
         if [[ -n "$3" ]]; then
-          echo "Running: docker logs cw_${1}_1 2>&1 | grep -B 5 -A ${3} '${2}' "
-          docker logs "cw_${1}_1" 2>&1 | grep -B 5 -A "${3}" "${2}"
+          echo "Running: docker logs cw-${1}_1 2>&1 | grep -B 5 -A ${3} '${2}' "
+          docker logs "cw-${1}_1" 2>&1 | grep -B 5 -A "${3}" "${2}"
         else
-          echo "Running: docker logs cw_${1}_1 2>&1 | grep -B 5 -A 5 '${2}' "
-          docker logs "cw_${1}_1" 2>&1 | grep -B 5 -A 5 "${2}"
+          echo "Running: docker logs cw-${1}_1 2>&1 | grep -B 5 -A 5 '${2}' "
+          docker logs "cw-${1}_1" 2>&1 | grep -B 5 -A 5 "${2}"
         fi
       else
         echo "What am I searching for? 🦡 "
@@ -154,11 +154,11 @@ function dlogs() {
   # $2    string    number of lines for tail
   if [[ -n "$1" ]]; then
       if [[ -n "$2" ]]; then
-        echo "Running: docker logs cw_${1}_1 --tail ${2}"
-        docker logs "cw_${1}_1" --tail "${2}"
+        echo "Running: docker logs cw-${1}_1 --tail ${2}"
+        docker logs "cw-${1}_1" --tail "${2}"
       else
-        echo "Running: docker logs cw_${1}_1 --tail 345"
-        docker logs "cw_${1}_1" --tail "345"
+        echo "Running: docker logs cw-${1}_1 --tail 345"
+        docker logs "cw-${1}_1" --tail "345"
       fi
 
   else
