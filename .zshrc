@@ -199,6 +199,7 @@ alias bs='clear; git branch; git status'
 alias bstat='clear; git branch; git status; echo "\n  *bs* is shorter and does the same thing. Just sayin. 👀 \n"' 
 alias wip='git add . && git commit -m "WIP [skip ci]"'
 alias update='wip && git pull --rebase origin master && git reset HEAD~'
+alias latest='git checkout master && git pull'
 
 # Misc Shortcuts
 alias cls='clear; ls -lAhS';
@@ -306,21 +307,35 @@ function timer() {
 }
 
 # TODO: Both of these start commands will leave an unused blank tab in the first position.
-function start_servers() {
-  new_tab "$1; sshc v" # doesn't use rename_tab as name will be replaced on ssh into vagrant
-  new_tab "$1; rename_tab "Commotion-Dev-Srv." && start bafsllc clearwater commotion"
-  new_tab "$1; rename_tab "Inst-Admin" && setProfile generic_dev_server; bcd && nvm use 14 && yarn start institution-admin"
-  new_tab "$1; rename_tab "CMS-Reports" && setProfile generic_dev_server; bcd && nvm use 14 && yarn start cms-reports-service"
-  new_tab "$1; rename_tab "Proxy-Server" && setProfile generic_dev_server; bcd && nvm use 14 && yarn start:proxy-server"
-  new_tab "$1; rename_tab "Proxy-Srv-Reports-Srv" && setProfile generic_dev_server; bcd && nvm use 14 && yarn proxy cms-reports-service"
-  new_tab "$1; rename_tab "Proxy-Inst-Admin" && setProfile generic_dev_server; bcd && nvm use 14 && yarn proxy institution-admin"
-  new_tab "$1; rename_tab "Storybook UI" && setProfile generic_dev_server; bcd && nvm use 14 && yarn nx run ui:build-storybook && yarn nx run ui:storybook"
+function servers_start() {
+  if [[ -n "$1" ]]; then
+    if [[ "$1" == "ris" ]] || [[ "$1" == "all" ]]; then
+      new_tab "$1; rename_tab "Proxy-Server" && setProfile generic_dev_server; bcd && nvm use 14 && yarn start:proxy-server"
+      new_tab "$1; rename_tab "Proxy-RIS-Front" && setProfile generic_dev_server; bcd && nvm use 14 && yarn proxy reports-indexing-service"
+      new_tab "$1; rename_tab "Proxy-RIS-Back" && setProfile generic_dev_server; bsd && nvm use 14 && yarn proxy reports-indexing-service"
+      fi
+
+    if [[ "$1" == "inst-admin" ]] || [[ "$1" == "all" ]]; then
+      new_tab "$1; rename_tab "Proxy-Inst-Admin" && setProfile generic_dev_server; bcd && nvm use 14 && yarn proxy institution-admin"
+      fi
+
+    if [[ "$1" == "all" ]]; then
+      new_tab "$1; sshc v" # doesn't use rename_tab as name will be replaced on ssh into vagrant
+      new_tab "$1; rename_tab "Commotion-Dev-Srv." && start bafsllc clearwater commotion"
+      new_tab "$1; rename_tab "Storybook UI" && setProfile generic_dev_server; bcd && nvm use 14 && yarn nx run ui:build-storybook && yarn nx run ui:storybook"
+      new_tab "$1; rename_tab "Proxy-CMS-Reports" && setProfile generic_dev_server; bcd && nvm use 14 && yarn proxy cms-reports-service"
+    fi
+
+  else
+    echo "ERROR: Must provide which server grouping should start."
+
+  fi
 }
 
-function start_work() {
+function tabs_start() {
   new_tab "$1; rename_tab "clearwater" && cwd && env3 && bs"
-  new_tab "$1; rename_tab "blast-client" && bcd && bs"
-  new_tab "$1; rename_tab "blast-services" && bsd && bs"
+  new_tab "$1; rename_tab "blast-client" && bcd && nvm use 14 && bs"
+  new_tab "$1; rename_tab "blast-services" && bsd && nvm use 14 && bs"
 }
 
 
