@@ -89,6 +89,7 @@ function der() {
     # (D)ocker (E)xit (R)atio
     # Provides count of running/exited containers and name of any exited containers
     echo "__________"
+    # Alt w/o perl: | sed 's/^/RunningOrExited /'
     docker ps -f "status=running" | grep -ic "   up " | perl -ne 'print "Running: $_"'
     docker ps -f "status=exited" | grep -ic " exited " | perl -ne 'print "Exited: $_"'
     echo "-----------"

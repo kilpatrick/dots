@@ -7,6 +7,9 @@ PATH=$PATH:~/.yarn/bin
 # ipython
 PATH=$PATH:/Users/kilpatrick/Library/Python/3.8/bin
 
+# pip
+PATH=$PATH:/Users/kilpatrick/Library/Python/3.9/bin
+
 # nvm
 source ~/dev/lukechilds/zsh-nvm/zsh-nvm.plugin.zsh
 
@@ -102,6 +105,17 @@ function pingRange() {
   done
 }
 
+
+function findProcess() {
+  if [[ -n "$1" ]]; then
+      print "running: lsof -nP -iTCP -sTCP:LISTEN | grep ${1}"
+      lsof -nP -iTCP -sTCP:LISTEN | grep ${1}
+  else
+      print "Gimme a port, please."
+  fi
+  }
+
+
 function oupi() {
     echo "Everything:"
     arp -na
@@ -194,12 +208,54 @@ function oupi() {
     arp -na | grep -i "E4.5F"
 }
 
+
+function der() {
+    # (D)ocker (E)xit (R)atio
+    # Provides count of running/exited containers and name of any exited containers
+    echo "__________"
+    # Alt w/o perl: | sed 's/^/RunningOrExited /'
+    docker ps -f "status=running" | grep -ic "   up " | perl -ne 'print "Running: $_"'
+    docker ps -f "status=exited" | grep -ic " exited " | perl -ne 'print "Exited: $_"'
+    echo "-----------"
+
+    let exit_count=$(docker ps -f "status=exited" | grep -ic " exited ")
+    if [[ $exit_count -gt 0 ]]; then
+      docker ps -f "status=exited"
+    fi
+    echo
+}
+
+
+function follow() { 
+  # $1    string    container to search (just the base name no cw or num)
+  # $2    number    (optional) TODO: See description above
+  if [[ -n "$1" ]]; then
+    last_char=${1: -1}
+    container_name="$1"
+    if [[ "${last_char}" == "/" ]]; then
+        container_name=$(sed 's/.\{1\}$//' <<< "$container_name")
+    fi
+      setProfile docker; rename_tab "🐋 Docker Logs - ${container_name}"
+      docker logs "cw-${container_name}-1" --tail 7 -f
+  else
+    echo "Gonna need a container, Captain. ⛵"
+  fi
+}
+
+# TODO: Better if this worked: `follow [loans, tombstone, entities, web]` as a multi-option single command
+function follow_important(){
+  new_tab "$1; follow loans"
+  new_tab "$1; follow tombstone"
+  new_tab "$1; follow entities"
+  new_tab "$1; follow web"
+}
+
 # Git
 alias bs='clear; git branch; git status'
 alias bstat='clear; git branch; git status; echo "\n  *bs* is shorter and does the same thing. Just sayin. 👀 \n"' 
 alias wip='git add . && git commit -m "WIP [skip ci]"'
-alias update='wip && git pull --rebase origin master && git reset HEAD~'
-alias latest='git checkout master && git pull'
+alias update='wip && git pull --rebase origin develop && git reset HEAD~'
+alias latest='git checkout develop && git pull'
 
 # Misc Shortcuts
 alias cls='clear; ls -lAhS';
@@ -210,8 +266,8 @@ alias bcd='cd ~/dev/bafsllc/blast-client'
 alias bsd='cd ~/dev/bafsllc/blast-services'
 
 alias cwdir='cd ~/dev/bafsllc/clearwater; echo "\n  *cwd* 👀  \n"' 
-alias env3='source .venv3/bin/activate'
-alias env2='source .venv2/bin/activate'
+alias env3=env
+alias env='source .venv/bin/activate'
 
 # Terminal Settings
 alias glare='setProfile Agnosterish-LowGlare'
@@ -219,7 +275,9 @@ alias noglare='setProfile Agnosterish'
 
 # sql
 alias printsql='echo mysql -h 192.168.50.4 -u root -P 3306 -p'
-alias repl='setProfile repl; cwd && env3 && ipython'
+# alias repl='setProfile repl; rename_tab "🐍 Python3 REPL"; cwd && env3 && ipython' #ipython isn't installed ATM
+alias repl='setProfile repl; rename_tab "🐍 Python3 REPL"; cwd && env3 && python3'
+alias replnode='setProfile replnode; rename_tab "⬢ Node REPL"; cd ~/dev/fynish/node/server; node'
 alias sqllogin='mysql -h 192.168.50.4 -u root -P 3306 -p'
 alias sqlstart='echo mysql.server start'
 alias sqlstop='echo mysql.server stop'
@@ -229,11 +287,12 @@ alias bf='black -t py38 -l 100'
 
 
 function cwmycli () {
+  rename_tab "🗄️ Databases";
   setProfile mycli;
   echo Connecting to local mysql db...
-  mycli -h 192.168.50.4 -u root
+  # mycli -h 192.168.50.4 -u root # vagrant
+  mycli -h 127.0.0.1 -u root  # no-vagrant
 }
-
 
 # Lock the screen (when going AFK) <- Negative impact on wake w/ external display
 alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"
@@ -265,7 +324,7 @@ EOF
 }
 
 
-# Note: This works well with iTerm. 
+# Note: This works well with iTerm.
 # It will "work" with Apple's default Terminal, but it will leave your
 # shell name in the tab as well. Ex: `rename_tab Dev-Server` results in a
 # "Dev-Server" tab in iTerm, but a tab named "~- Dev-Server — -zsh > zsh"
@@ -306,38 +365,64 @@ function timer() {
    echo -en "\07"; sleep 0.333; echo -en "\07"; sleep 0.333; echo -en "\07"
 }
 
-# TODO: Both of these start commands will leave an unused blank tab in the first position.
+# TODO: Both `servers_start` and `tabs_start` commands leave an unused blank tab in the first position.
 function servers_start() {
   if [[ -n "$1" ]]; then
     if [[ "$1" == "ris" ]] || [[ "$1" == "all" ]]; then
-      new_tab "$1; rename_tab "Proxy-Server" && setProfile generic_dev_server; bcd && nvm use 14 && yarn start:proxy-server"
-      new_tab "$1; rename_tab "Proxy-RIS-Front" && setProfile generic_dev_server; bcd && nvm use 14 && yarn proxy reports-indexing-service"
-      new_tab "$1; rename_tab "Proxy-RIS-Back" && setProfile generic_dev_server; bsd && nvm use 14 && yarn proxy reports-indexing-service"
+      new_tab "$1; rename_tab '🚀🧾 Proxy-RIS-Front' && setProfile generic_dev_server; bcd &&   14 && yarn proxy reports-indexing-service"
       fi
 
     if [[ "$1" == "inst-admin" ]] || [[ "$1" == "all" ]]; then
-      new_tab "$1; rename_tab "Proxy-Inst-Admin" && setProfile generic_dev_server; bcd && nvm use 14 && yarn proxy institution-admin"
+      new_tab "$1; rename_tab '🚀✍️ Proxy-Inst-Admin' && setProfile generic_dev_server; bcd && nvm use 14 && yarn proxy institution-admin"
       fi
 
-    if [[ "$1" == "all" ]]; then
-      new_tab "$1; sshc v" # doesn't use rename_tab as name will be replaced on ssh into vagrant
-      new_tab "$1; rename_tab "Commotion-Dev-Srv." && start bafsllc clearwater commotion"
-      new_tab "$1; rename_tab "Storybook UI" && setProfile generic_dev_server; bcd && nvm use 14 && yarn nx run ui:build-storybook && yarn nx run ui:storybook"
-      new_tab "$1; rename_tab "Proxy-CMS-Reports" && setProfile generic_dev_server; bcd && nvm use 14 && yarn proxy cms-reports-service"
+    if [[ "$1" == "all" ]] || [[ "$1" == "ris" ]] || [[ "$1" == "inst-admin" ]] || [[ "$1" == "commotion" ]]; then
+      new_tab "$1; rename_tab '💻 Commotion-Dev-Srv.' && start bafsllc clearwater commotion"
+      fi
+
+    if [[ "$1" == "all" ]] || [[ "$1" == "cms" ]] ; then
+      new_tab "$1; rename_tab '🚀📝 Proxy-CMS-Reports' && setProfile generic_dev_server; bcd && nvm use 14 && yarn proxy cms-reports-service"
+    fi
+
+    if [[ "$1" == "storybook" ]]; then
+      new_tab "$1; rename_tab 'Storybook UI' && setProfile generic_dev_server; bcd && nvm use 14 && yarn nx run ui:build-storybook && yarn nx run ui:storybook"
     fi
 
   else
-    echo "ERROR: Must provide which server grouping should start."
+    echo "ERROR: Must provide which server grouping should start." 
 
   fi
 }
 
+function restore_point_change() {
+{
+  # $1    string    database to target
+  # $2    string    .sql file to use as restore point
+  if [[ -n "$1" ]] && [[ -n "$2" ]]; then
+    (cd ./backup/restore_point && rm -rf "${1}.sql" && ln -s "../${2}" "./${1}.sql")
+  else
+    echo "ERROR: Missing required param(s)."
+    echo "Usage: restore_point_change database_name target_sql_restore_file"
+  fi
+}}
+
 function tabs_start() {
-  new_tab "$1; rename_tab "clearwater" && cwd && env3 && bs"
-  new_tab "$1; rename_tab "blast-client" && bcd && nvm use 14 && bs"
-  new_tab "$1; rename_tab "blast-services" && bsd && nvm use 14 && bs"
+  rename_tab '💧 clearwater' && cwd && env3 && bs
+  new_tab "$1; rename_tab '🚀 blast-client' && bcd && nvm use 14 && bs"
+  new_tab "$1; rename_tab '🌐 blast-services' && bsd && nvm use 14 && bs"
 }
 
+
+function fyn() {
+cd ~/dev/fynish/fynish/; rename_tab "⛰️ React Code"; bs;
+new_tab "$1 rename_tab '⬢ Node Code'; cd ~/dev/fynish/node; bs"
+}
+
+function srvfyn() {
+new_tab "$1; rename_tab '💻 React Dev Server'; setProfile 'webpack_dev_server'; cd ~/dev/fynish/fynish/client; export PORT='4000'; nvm use 18; yarn start;"
+new_tab "$1; rename_tab '🌐 Node Server'; setProfile generic_dev_server; cd ~/dev/fynish/node; nvm use 18; make start;";
+new_tab "$1; rename_tab '🗄️ Database'; setProfile mycli; cd ~/dev/fynish/node; clear;"
+}
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
