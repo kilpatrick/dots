@@ -58,9 +58,9 @@ source ~/dev/zsh-users/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # env vars
 export LESS="-F -g -i -M -R -S -w -X -z-4"
-export GITHUB_PACKAGES_READ_PAT=$GITHUB_PACKAGES_READ_PAT
+export GITHUB_PACKAGES_READ_PAT=$GITHUB_PACKAGES_READ_PAT_BAFS_MACBOOK
 export RSCLI_GITHUB_KEY=$RSCLI_GITHUB_KEY
-export GITHUB_PAT=$GITHUB_PAT
+export GITHUB_PAT=$GITHUB_PACKAGES_WRITE_PAT_BAFS_MACBOOK
   
 # Source Prezto. (Sorin Ionescu - sorin.ionescu@gmail.com)
 echo "looking here: "
@@ -187,6 +187,19 @@ function sshc() {
 
 
 # TODO: Write subl search open func for  subl $(rg -l SomeSearchQuery ./some_dir)
+function sublrg() {
+  # $1    string    string or regex pattern to search
+  # $2    string    directory path in which to search
+  if [[ -n "$1" ]]; then
+      if [[ -n "$2" ]]; then
+        subl $(rg -l "$1" "$2")
+      else
+        subl $(rg -l "$1" ./)
+      fi
+  else
+    echo "This is the format you're seeking: sublrg 'the thing I seek' or sublrg 'the thing I seek' './path/to/search'"
+  fi
+}
 
 
 function show() {
@@ -256,14 +269,16 @@ alias bstat='clear; git branch; git status; echo "\n  *bs* is shorter and does t
 alias wip='git add . && git commit -m "WIP [skip ci]"'
 alias update='wip && git pull --rebase origin develop && git reset HEAD~'
 alias latest='git checkout develop && git pull'
+alias nxc='echo "yarn nx format:write; git commit is not what you want"'
 
 # Misc Shortcuts
 alias cls='clear; ls -lAhS';
 alias xls='ls -lAhS';
 alias cra='create-react-app'
-alias cwd='cd ~/dev/bafsllc/clearwater'
-alias bcd='cd ~/dev/bafsllc/blast-client'
-alias bsd='cd ~/dev/bafsllc/blast-services'
+alias cwd='cd ~/dev/bafsllc/clearwater; nvm use 18'
+alias bcd='cd ~/dev/bafsllc/blast-client; nvm use 18'
+alias bsd='cd ~/dev/bafsllc/blast-services; nvm use 18'
+alias rgm='rg -M 500'
 
 alias cwdir='cd ~/dev/bafsllc/clearwater; echo "\n  *cwd* 👀  \n"' 
 alias env3=env
@@ -283,8 +298,25 @@ alias sqlstart='echo mysql.server start'
 alias sqlstop='echo mysql.server stop'
 
 # linting / ci
-alias bf='black -t py38 -l 100'
+alias bf='cwd; source .bfenv/bin/activate; black -t py38 -l 100'
+alias nxf="yarn nx format:write"
 
+function lintfix () {
+  if [[ -n "$1" ]] && [[ "$1" == "js" ]]; then
+    for file_name in $(git diff --name-only origin/develop); do
+      # Note as written this doesn't support: .jsx or .tsx files
+      if [[ $file_name == *.js ]]; then
+        echo "Fixing $file_name ...";
+        ./node_modules/eslint/bin/eslint.js --fix "$file_name" || exit 1;
+      else
+        echo "Skipping non-JS file:  $file_name ...";      
+      fi
+    done
+  else
+    echo "Missing required options. lintfix supports:"
+    echo "  - lintfix js [filename]"
+  fi
+}
 
 function cwmycli () {
   rename_tab "🗄️ Databases";
@@ -368,24 +400,47 @@ function timer() {
 # TODO: Both `servers_start` and `tabs_start` commands leave an unused blank tab in the first position.
 function servers_start() {
   if [[ -n "$1" ]]; then
-    if [[ "$1" == "ris" ]] || [[ "$1" == "all" ]]; then
-      new_tab "$1; rename_tab '🚀🧾 Proxy-RIS-Front' && setProfile generic_dev_server; bcd &&   14 && yarn proxy reports-indexing-service"
-      fi
 
-    if [[ "$1" == "inst-admin" ]] || [[ "$1" == "all" ]]; then
-      new_tab "$1; rename_tab '🚀✍️ Proxy-Inst-Admin' && setProfile generic_dev_server; bcd && nvm use 14 && yarn proxy institution-admin"
-      fi
-
-    if [[ "$1" == "all" ]] || [[ "$1" == "ris" ]] || [[ "$1" == "inst-admin" ]] || [[ "$1" == "commotion" ]]; then
+    if [[ "$1" == "commotion" ]]; then
       new_tab "$1; rename_tab '💻 Commotion-Dev-Srv.' && start bafsllc clearwater commotion"
       fi
 
-    if [[ "$1" == "all" ]] || [[ "$1" == "cms" ]] ; then
-      new_tab "$1; rename_tab '🚀📝 Proxy-CMS-Reports' && setProfile generic_dev_server; bcd && nvm use 14 && yarn proxy cms-reports-service"
+
+    if [[ "$1" == "ris" ]] || [[ "$1" == "all" ]]; then
+      new_tab "$1; rename_tab '🚀🧾 RIS-Front' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy reports-indexing-service"
+      fi
+
+    if [[ "$1" == "inst-admin" ]] || [[ "$1" == "all" ]]; then
+      new_tab "$1; rename_tab '🚀✍️ Inst-Admin' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy institution-admin"
+      fi
+
+    if [[ "$1" == "csi-host" ]] || [[ "$1" == "all" ]]; then
+      new_tab "$1; rename_tab '🚀✍️ CSI-Host' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy csi-host"
+      fi
+
+      if [[ "$1" == "bp-front" ]] || [[ "$1" == "all" ]] || [[ "$1" == "bp-all" ]]; then
+      new_tab "$1; rename_tab '🧑💰 BP (Front Proxy)' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy borrower-portal"
+      fi
+
+      if [[ "$1" == "bp-docker" ]] || [[ "$1" == "all" ]] || [[ "$1" == "bp-all" ]]; then
+      new_tab "$1; rename_tab '🧑💻 BP (Back Docker)' && setProfile generic_dev_server; bsd && nvm use 18 && yarn start:docker borrower-portal"
+      fi
+
+    if [[ "$1" == "cms" ]] || [[ "$1" == "all" ]] ; then
+      new_tab "$1; rename_tab '🚀📝 CMS-Reports' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy cms-reports-service"
+    fi
+
+    if [[ "$1" == "legacy" ]] || [[ "$1" == "all" ]] ; then
+      new_tab "$1; rename_tab '🚀💻 Legacy' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy legacy"
+    fi
+
+    if [[ "$1" == "argo" ]] ; then
+      new_tab "$1; rename_tab '🐙 Argo' && setProfile generic_dev_server; kubectl port-forward -n argocd service/argocd-server 8080:80"
     fi
 
     if [[ "$1" == "storybook" ]]; then
-      new_tab "$1; rename_tab 'Storybook UI' && setProfile generic_dev_server; bcd && nvm use 14 && yarn nx run ui:build-storybook && yarn nx run ui:storybook"
+      new_tab "$1; rename_tab '🆂 Storybook UI' && setProfile generic_dev_server; bcd && nvm use 18 && yarn nx run ui:build-storybook && yarn nx run ui:storybook"
+      new_tab "$1; rename_tab '🆂 Storybook UI Shared' && setProfile generic_dev_server; bcd && nvm use 18 && yarn nx run ui-shared:build-storybook && yarn nx run ui-shared:storybook"
     fi
 
   else
@@ -408,8 +463,9 @@ function restore_point_change() {
 
 function tabs_start() {
   rename_tab '💧 clearwater' && cwd && env3 && bs
-  new_tab "$1; rename_tab '🚀 blast-client' && bcd && nvm use 14 && bs"
-  new_tab "$1; rename_tab '🌐 blast-services' && bsd && nvm use 14 && bs"
+  new_tab "$1; rename_tab '🚀 blast-client' && bcd && nvm use 18 && bs"
+  new_tab "$1; rename_tab '🌐 blast-services' && bsd && nvm use 18 && bs"
+  new_tab "$1; rename_tab '⚛️ Commotion Dir' && cwd && nvm use 18 && cd commotion && clear"
 }
 
 
