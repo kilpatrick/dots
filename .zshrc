@@ -13,6 +13,7 @@ PATH=$PATH:/Users/kilpatrick/Library/Python/3.9/bin
 # nvm
 source ~/dev/lukechilds/zsh-nvm/zsh-nvm.plugin.zsh
 
+
 # zsh nvm auto-switching by Alejandro AR
 # kinduff.com/2016/09/14/automatic-version-switch-for-nvm
 #
@@ -198,6 +199,23 @@ function sublrg() {
       fi
   else
     echo "This is the format you're seeking: sublrg 'the thing I seek' or sublrg 'the thing I seek' './path/to/search'"
+  fi
+}
+
+# Visual Studio Code (VSC)
+alias vsc='open -a /Applications/Visual\ Studio\ Code.app'
+
+function vscrg() {
+  # $1    string    string or regex pattern to search
+  # $2    string    directory path in which to search
+  if [[ -n "$1" ]]; then
+      if [[ -n "$2" ]]; then
+        vsc $(rg -l "$1" "$2")
+      else
+        vsc $(rg -l "$1" ./)
+      fi
+  else
+    echo "This is the format you're seeking: vscrg 'the thing I seek' or vscrg 'the thing I seek' './path/to/search'"
   fi
 }
 
@@ -401,33 +419,52 @@ function timer() {
 function servers_start() {
   if [[ -n "$1" ]]; then
 
-    if [[ "$1" == "commotion" ]]; then
-      new_tab "$1; rename_tab '💻 Commotion-Dev-Srv.' && start bafsllc clearwater commotion"
-      fi
-
+    if [[ "$1" == "commotion" ]] || [[ "$1" == "all" ]]; then
+      new_tab "$1; rename_tab '💻 Commotion' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy commotion"
+    fi
 
     if [[ "$1" == "ris" ]] || [[ "$1" == "all" ]]; then
       new_tab "$1; rename_tab '🚀🧾 RIS-Front' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy reports-indexing-service"
-      fi
+    fi
 
     if [[ "$1" == "inst-admin" ]] || [[ "$1" == "all" ]]; then
       new_tab "$1; rename_tab '🚀✍️ Inst-Admin' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy institution-admin"
-      fi
+    fi
 
     if [[ "$1" == "csi-host" ]] || [[ "$1" == "all" ]]; then
       new_tab "$1; rename_tab '🚀✍️ CSI-Host' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy csi-host"
-      fi
+    fi
 
-      if [[ "$1" == "bp-front" ]] || [[ "$1" == "all" ]] || [[ "$1" == "bp-all" ]]; then
-      new_tab "$1; rename_tab '🧑💰 BP (Front Proxy)' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy borrower-portal"
-      fi
+    if [[ "$1" == "csi-service" ]] || [[ "$1" == "all" ]] ; then
+      new_tab "$1; rename_tab '💻  CSI Service' && setProfile generic_dev_server; bcd && nvm use 18 && yarn docker:csi-service"
+    fi
 
-      if [[ "$1" == "bp-docker" ]] || [[ "$1" == "all" ]] || [[ "$1" == "bp-all" ]]; then
-      new_tab "$1; rename_tab '🧑💻 BP (Back Docker)' && setProfile generic_dev_server; bsd && nvm use 18 && yarn start:docker borrower-portal"
-      fi
+    # if [[ "$1" == "csi-host" ]] || [[ "$1" == "all" ]] ; then
+    #   new_tab "$1; rename_tab '💻  CSI Host' && setProfile generic_dev_server; bcd && nvm use 18 && yarn serve csi-host"
+    # fi
+
+    if [[ "$1" == "bp-front" ]] || [[ "$1" == "all" ]] || [[ "$1" == "bp-all" ]]; then
+      new_tab "$1; rename_tab '🧑💰 BP (Front)' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy borrower-portal"
+    fi
+
+    if [[ "$1" == "bp-docker" ]] || [[ "$1" == "all" ]] || [[ "$1" == "bp-all" ]]; then
+      new_tab "$1; rename_tab '🧑💻 BP (Back)' && setProfile generic_dev_server; bsd && nvm use 18 && yarn start:docker borrower-portal"
+    fi
+
+    if [[ "$1" == "document-editor" ]] || [[ "$1" == "all" ]]; then
+      new_tab "$1; rename_tab '💻 Doc Editor' && setProfile generic_dev_server; bcd && nvm use 18 && yarn start:document-editor"
+    fi
+
+    if [[ "$1" == "borrower-portal-admin" ]] || [[ "$1" == "all" ]]; then
+      new_tab "$1; rename_tab '🧑💻 BP Admin' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy borrower-portal-admin"
+    fi
 
     if [[ "$1" == "cms" ]] || [[ "$1" == "all" ]] ; then
       new_tab "$1; rename_tab '🚀📝 CMS-Reports' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy cms-reports-service"
+    fi
+
+    if [[ "$1" == "spreads" ]] || [[ "$1" == "all" ]] ; then
+      new_tab "$1; rename_tab '💻 Spreads' && setProfile generic_dev_server; bcd && nvm use 18 && yarn proxy spreads"
     fi
 
     if [[ "$1" == "legacy" ]] || [[ "$1" == "all" ]] ; then
@@ -465,7 +502,6 @@ function tabs_start() {
   rename_tab '💧 clearwater' && cwd && env3 && bs
   new_tab "$1; rename_tab '🚀 blast-client' && bcd && nvm use 18 && bs"
   new_tab "$1; rename_tab '🌐 blast-services' && bsd && nvm use 18 && bs"
-  new_tab "$1; rename_tab '⚛️ Commotion Dir' && cwd && nvm use 18 && cd commotion && clear"
 }
 
 
@@ -478,6 +514,14 @@ function srvfyn() {
 new_tab "$1; rename_tab '💻 React Dev Server'; setProfile 'webpack_dev_server'; cd ~/dev/fynish/fynish/client; export PORT='4000'; nvm use 18; yarn start;"
 new_tab "$1; rename_tab '🌐 Node Server'; setProfile generic_dev_server; cd ~/dev/fynish/node; nvm use 18; make start;";
 new_tab "$1; rename_tab '🗄️ Database'; setProfile mycli; cd ~/dev/fynish/node; clear;"
+}
+
+function codebase_stats() {
+  # Python (excluding .pyc files)
+  echo "python lines"
+  (find ./ -name '*.py' -print0 | xargs -0 cat ) | wc -l
+  echo 'python "words"'
+  ( find ./ -name '*.py' -print0 | xargs -0 cat ) | wc -w | printf
 }
 
 export NVM_DIR="$HOME/.nvm"
