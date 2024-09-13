@@ -1,0 +1,45 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/syntax.html
+# This is a super basic WIP.
+
+file_extensions:
+  - swift
+scope: source.swift
+contexts:
+  main:
+    # Match keywords
+    - match: \b(?:var|let|func|class|struct|enum|extension|protocol|import|return|if|else|for|while|switch|case|break|continue|in|as|try|catch|throw|defer)\b
+      scope: keyword.control.swift
+
+    # Match strings
+    - match: '"'
+      scope: punctuation.definition.string.begin.swift
+      push: double_quoted_string
+
+    # Match comments
+    - match: '//'
+      scope: punctuation.definition.comment.swift
+      push: line_comment
+
+    # Match numbers
+    - match: \b\d+(\.\d+)?\b
+      scope: constant.numeric.swift
+
+    # Match variables and constants (optional improvement)
+    - match: \b(?:[a-zA-Z_][a-zA-Z0-9_]*)\b
+      scope: variable.other.swift
+
+  double_quoted_string:
+    - meta_scope: string.quoted.double.swift
+    - match: '\\.'
+      scope: constant.character.escape.swift
+    - match: '"'
+      scope: punctuation.definition.string.end.swift
+      pop: true
+
+  line_comment:
+    - meta_scope: comment.line.double-slash.swift
+    - match: \n
+      scope: punctuation.separator.comment.swift
+      pop: true
